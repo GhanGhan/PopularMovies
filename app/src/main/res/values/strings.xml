@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_sort_key">sort order</string>
+    <string name="pref_sort_default">popularity.desc</string>
+    <string name="pref_sort_label">Sort Order of Thumbnails</string>
+
+    <string-array name="pref_sort_titles">
+        <item>Popularity</item>
+        <item>Rating</item>
+    </string-array>
+
+    <string-array name="pref_sort_values">
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
+    </string-array>
+    <string name="title_activity_details">DetailsActivity</string>
+
+
+</resources>
