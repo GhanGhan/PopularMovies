@@ -46,8 +46,6 @@
                 android:layout_toRightOf="@id/thumbnail"
                 android:layout_below="@id/movie_release"/>
 
-
-
         </RelativeLayout>
 
         <TextView
@@ -56,9 +54,21 @@
             android:layout_height="wrap_content"
             android:padding="12dp" />
 
+        <TextView
+            android:id="@+id/movie_review_tile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:padding="12dp"
+            android:onClick="expandContent"/>
 
-
-
+        <TextView
+            android:id="@+id/movie_review_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </ScrollView>

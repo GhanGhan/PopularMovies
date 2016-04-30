@@ -42,7 +42,7 @@ import java.net.URL;
 public class MoviesFragment extends Fragment {
     private ImageAdapter thumbnails;
 
-    private final String THE_MOVIE_DB_KEY = "29cc35d5be0b20cc6c4b29beb1d90f78";
+
     private OnFragmentInteractionListener mListener;
 
     public MoviesFragment() {
@@ -70,11 +70,11 @@ public class MoviesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
+                //final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
                 String iD = thumbnails.movieID[position];
-                String url = MOVIE_BASE_URL +iD +"?api_key="+ BuildConfig.THE_MOVIE_DB_KEY;
+                //String url = MOVIE_BASE_URL +iD +"?api_key="+ BuildConfig.THE_MOVIE_DB_KEY;
                 Intent openDetail = new Intent(getActivity(), DetailsActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, url);
+                        .putExtra(Intent.EXTRA_TEXT, iD);
                 startActivity(openDetail);
 
             }
@@ -146,7 +146,7 @@ public class MoviesFragment extends Fragment {
 
                 Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_ORDER, order)
-                        .appendQueryParameter(KEY, THE_MOVIE_DB_KEY).build();
+                        .appendQueryParameter(KEY, BuildConfig.THE_MOVIE_DB_KEY).build();
 
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI" + builtUri.toString());
@@ -218,7 +218,7 @@ public class MoviesFragment extends Fragment {
             final String MTP_POSTER = "poster_path";
             String poster;
             int idInt;
-            //Log.v(LOG_TAG, movieSt);
+            Log.v(LOG_TAG, movieSt);
             JSONObject movieJson = new JSONObject(movieSt);
             JSONArray movieArray = movieJson.getJSONArray(MTB_RESULTS);
             String[][] results = new String[2][movieArray.length()];

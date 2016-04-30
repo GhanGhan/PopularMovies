@@ -2,6 +2,7 @@ package com.example.ghanghan.popularmovies;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 
 public class DetailsActivity extends ActionBarActivity {
 
@@ -18,6 +19,8 @@ public class DetailsActivity extends ActionBarActivity {
         }
     }
 
-
+    public void expandContent(View v) {
+        DetailsFragment.expandContent(v);
+    }
 
 }
