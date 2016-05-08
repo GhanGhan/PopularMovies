@@ -298,7 +298,7 @@ public class MoviesFragment extends Fragment {
 
             if(mThumbIds != null) {
             String url = (String)getItem(position);
-            Log.v("In adapter", "Before in View");
+                Log.v("In adapter", "Before in View");
 
                 Log.v("In adapter", "The Poster URL " + url);
                 Picasso.with(mContext).load(url).into(imageView);

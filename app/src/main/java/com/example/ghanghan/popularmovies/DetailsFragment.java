@@ -1,6 +1,7 @@
 package com.example.ghanghan.popularmovies;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,7 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -27,6 +35,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.StringTokenizer;
 
 
 /**
@@ -38,6 +47,7 @@ import java.net.URL;
  */
 public class DetailsFragment extends Fragment {
     private static boolean expand = false;
+    private ThumbnailAdapter thumbnails;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -54,6 +64,27 @@ public class DetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+        thumbnails = new ThumbnailAdapter(getActivity());
+        //ImageAdapter will take images from a server and use it to populate
+        //the ListView
+  /*      ListView listView = (ListView)rootView.findViewById(R.id.trailer_horizontal_list);
+        thumbnails = new ThumbnailAdapter(getActivity());
+
+        listView.setAdapter(thumbnails);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
+                String iD = thumbnails.movieID[position];
+                String url = "http://img.youtube.com/vi/"+""
+                Intent openDetail = new Intent(getActivity(), DetailsActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, iD);
+                startActivity(openDetail);
+
+            }
+        });*/
+
         return rootView;
     }
 
@@ -82,22 +113,24 @@ public class DetailsFragment extends Fragment {
         MovieData.execute(url);
     }
 
-    public class FetchInfo extends AsyncTask<String, Void, String[]>{
+    public class FetchInfo extends AsyncTask<String, Void, String[]> {
         @Override
         protected String[] doInBackground(String... strings) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             BufferedReader readerReview = null;
+            BufferedReader readerTrailer = null;
 
             //Raw Json String data
             String discoverString = null;
             String reviewString = null;
+            String trailerString = null;
             //parsed movie and movie review data
-            String dataMovie[], dataReview[], movieDataArray[];
+            String dataMovie[], dataReview[], dataTrailer[], movieDataArray[];
 
-            try{
+            try {
 
-                final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
+                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
                 final String REVIEW = "reviews";
                 final String TRAILER = "videos";
                 final String KEY = "api_key";
@@ -125,7 +158,7 @@ public class DetailsFragment extends Fragment {
                 URL urlTrailer = new URL(builtUriTrailer.toString());
 
                 //create request for TheMovieDataBase and open connection for general data
-                urlConnection = (HttpURLConnection)urlGeneral.openConnection();
+                urlConnection = (HttpURLConnection) urlGeneral.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
@@ -134,7 +167,7 @@ public class DetailsFragment extends Fragment {
                 StringBuffer buffer = new StringBuffer();
 
                 //create request for TheMovieDataBase and open connection for Review data
-                urlConnection = (HttpURLConnection)urlReview.openConnection();
+                urlConnection = (HttpURLConnection) urlReview.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
@@ -142,48 +175,53 @@ public class DetailsFragment extends Fragment {
                 InputStream inputStreamReview = urlConnection.getInputStream();
                 StringBuffer bufferReview = new StringBuffer();
 
-                //create request for TheMovieDataBase and open connection for Review data
-                urlConnection = (HttpURLConnection)urlTrailer.openConnection();
+                //create request for TheMovieDataBase and open connection for Trailer data
+                urlConnection = (HttpURLConnection) urlTrailer.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
-                //Read input stream into String for Review
-                //InputStream inputStreamReview = urlConnection.getInputStream();
-                //StringBuffer bufferReview = new StringBuffer();
+                //Read input stream into String for Trailer
+                InputStream inputStreamTrailer = urlConnection.getInputStream();
+                StringBuffer bufferTrailer = new StringBuffer();
 
-                if(inputStream == null)
+                if (inputStream == null)
                     return null;
 
                 reader = new BufferedReader(new InputStreamReader(inputStream));
                 readerReview = new BufferedReader(new InputStreamReader(inputStreamReview));
+                readerTrailer = new BufferedReader(new InputStreamReader(inputStreamTrailer));
 
                 String line;
                 //place data in associated buffer
-                while((line = reader.readLine())!= null){
+                while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
-                while((line = readerReview.readLine())!= null){
+                while ((line = readerReview.readLine()) != null) {
                     bufferReview.append(line + "\n");
                 }
+                while ((line = readerTrailer.readLine()) != null) {
+                    bufferTrailer.append(line + "\n");
+                }
 
-                if(buffer.length()==0 || bufferReview.length() == 0){
+                if (buffer.length() == 0 || bufferReview.length() == 0 || bufferTrailer.length() == 0) {
                     return null;
                 }
 
                 discoverString = buffer.toString();
                 reviewString = bufferReview.toString();
+                trailerString = bufferTrailer.toString();
                 Log.v("Data: ", discoverString);
                 Log.v("Data2:", reviewString);
+                Log.v("Data3:", trailerString);
 
 
-
-            }catch(MalformedURLException e){
+            } catch (MalformedURLException e) {
                 Log.e("Creating URL ", "Error", e);
                 return null;
-            }catch(IOException e){
+            } catch (IOException e) {
                 Log.e("Connecting to Server ", "Error", e);
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
@@ -195,16 +233,18 @@ public class DetailsFragment extends Fragment {
                     }
                 }
             }
-            try{
+            try {
 
                 dataMovie = getMovieData(discoverString);
                 dataReview = getReviewData(reviewString);
-                Log.v("DataMovie Array", dataMovie[0]+" " +dataReview[0]);
+                dataTrailer = getTrailerData(trailerString);
+                Log.v("DataMovie Array", dataMovie[0] + " \n" + dataReview[0] + "\n" + dataTrailer[0]);
                 movieDataArray = concatArrays(dataMovie, dataReview);
+                movieDataArray = concatArrays(movieDataArray, dataTrailer);
 
                 return movieDataArray;
 
-            }catch(JSONException e){
+            } catch (JSONException e) {
                 Log.e("Json", e.getMessage(), e);
                 e.printStackTrace();
             }
@@ -236,7 +276,7 @@ public class DetailsFragment extends Fragment {
 
         }//end getMovieData
 
-        public String[] getReviewData(String revString){
+        public String[] getReviewData(String revString) {
             final String MTB_TOTAL_RESULTS = "total_results";
             final String MTB_WRITER = "author";
             final String MTB_REVIEW = "content";
@@ -254,56 +294,135 @@ public class DetailsFragment extends Fragment {
                     JSONObject reviewData = reviewArray.getJSONObject(i);
 
                     data[1] += reviewData.getString(MTB_WRITER);
-                    if(i>0) {
+                    if (i > 0) {
                         data[1] += " " + reviewData.getString(MTB_WRITER);
-                        data[2] += "\n"+ "\n" + reviewData.getString(MTB_REVIEW);
-                    }else {
+                        data[2] += "\n" + "\n" + reviewData.getString(MTB_REVIEW);
+                    } else {
                         data[2] += reviewData.getString(MTB_REVIEW);
                         data[1] += reviewData.getString(MTB_WRITER);
                     }
                 }
                 return data;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 Log.e("Json", e.getMessage(), e);
                 e.printStackTrace();
             }
             return null;
         }
 
-        public String[] concatArrays(String[] array1, String[] array2){
-            String[] results = new String [array1.length +array2.length];
+        public String[] getTrailerData(String trailerString) {
+            final String MTB_RESULTS = "results";
+            final String MTB_KEY = "key";
+            final String MTB_NAME = "name";
 
-            for(int i = 0; i <array1.length; i++){
+            try {
+                String[] data = new String[2];
+                JSONObject trailerJson = new JSONObject(trailerString);
+                JSONArray trailerArray = trailerJson.getJSONArray(MTB_RESULTS);
+
+                for (int i = 0; i < trailerArray.length(); i++) {
+                    JSONObject reviewData = trailerArray.getJSONObject(i);
+
+                    if (i > 0) {
+                        data[0] += "," + reviewData.getString(MTB_NAME);
+                        data[1] += "," + reviewData.getString(MTB_KEY);
+                    } else {
+                        data[0] += reviewData.getString(MTB_NAME);
+                        data[1] += reviewData.getString(MTB_KEY);
+                    }
+                }
+                return data;
+            } catch (JSONException e) {
+                Log.e("Json", e.getMessage(), e);
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        public String[] concatArrays(String[] array1, String[] array2) {
+            String[] results = new String[array1.length + array2.length];
+
+            for (int i = 0; i < array1.length; i++) {
                 results[i] = array1[i];
             }
 
-            for(int i = array1.length; i< array1.length +array2.length; i++){
-                results[i] = array2[i-array1.length];
+            for (int i = array1.length; i < array1.length + array2.length; i++) {
+                results[i] = array2[i - array1.length];
             }
             return results;
         }
 
         @Override
         protected void onPostExecute(String[] strings) {
-            TextView title =  (TextView)getActivity().findViewById(R.id.movie_title);
-            TextView plot =  (TextView)getActivity().findViewById(R.id.movie_plot);
-            TextView rating =  (TextView)getActivity().findViewById(R.id.movie_rating);
-            TextView release_date =  (TextView)getActivity().findViewById(R.id.movie_release);
-            TextView review_tile = (TextView)getActivity().findViewById(R.id.movie_review_tile);
-            TextView review_content = (TextView)getActivity().findViewById(R.id.movie_review_content);
+            TextView title = (TextView) getActivity().findViewById(R.id.movie_title);
+            TextView plot = (TextView) getActivity().findViewById(R.id.movie_plot);
+            TextView rating = (TextView) getActivity().findViewById(R.id.movie_rating);
+            TextView release_date = (TextView) getActivity().findViewById(R.id.movie_release);
+            TextView review_tile = (TextView) getActivity().findViewById(R.id.movie_review_tile);
+            TextView review_content = (TextView) getActivity().findViewById(R.id.movie_review_content);
 
-            ImageView poster = (ImageView)getActivity().findViewById(R.id.thumbnail);
+            ImageView poster = (ImageView) getActivity().findViewById(R.id.thumbnail);
 
             title.setText(strings[0]);
             plot.setText(strings[1]);
-            rating.setText(strings[2]+"/10");
+            rating.setText(strings[2] + "/10");
             release_date.setText(strings[3]);
-            review_tile.setText("Reviews (" +strings[5]+")" );
+            review_tile.setText("Reviews (" + strings[5] + ")");
             review_content.setText(strings[7]);
 
             Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w500/" + strings[4])
                     .into(poster);
 
+            ///For trailer thumbnail
+            String thumbKeys = strings[strings.length - 1];
+            String trailerDes = strings[strings.length-2];
+            Log.v("Trailer Description", trailerDes);
+            Log.v("Null description", trailerDes.substring(0, 4));
+            if(trailerDes.substring(0, 4).equals("null")){
+                thumbKeys = thumbKeys.substring(4);
+                trailerDes = trailerDes.substring(4);
+            }
+            Log.v("Trailer Description", trailerDes);
+            StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
+            int number = parseKeys.countTokens();
+            String thumbUrl[] = new String[number];
+            String keyUrl[] = new String[number];
+            String urlKey = null;
+            //constructing movie poster url
+
+            for (int i = 0; i < number; i++) {
+                urlKey = parseKeys.nextToken();
+                thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
+                keyUrl[i] = urlKey;
+                Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
+
+            }
+            //store poster url array inside Image adapter
+            Log.v("Post Ex", "Now in adapter");
+            thumbnails.mTrailerImageKey = thumbUrl;
+            thumbnails.mTrailerId = keyUrl;
+
+            Log.v("Post Ex A", "url in 2nd cell " + thumbUrl[1]);
+            thumbnails.notifyDataSetChanged();
+
+            LinearLayout trailerLayout = (LinearLayout) getActivity().findViewById(R.id.trailer_horizontal_list);
+
+            for (int i = 0; i < thumbnails.mTrailerImageKey.length; i++) {
+                final int index = i;
+                View placeHolder = thumbnails.getView(i, null, trailerLayout);
+
+                trailerLayout.addView(thumbnails.getView(i, placeHolder, trailerLayout));
+
+                placeHolder.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        String key = thumbnails.mTrailerId[index];
+                        String url = "https://www.youtube.com/watch?v=" + key;
+                        Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(trailerIntent);
+                    }
+                });
+
+            }
         }
     }
 
@@ -318,4 +437,52 @@ public class DetailsFragment extends Fragment {
             content.getParent().requestChildFocus(content, content);
         }
     }
+
+    public class ThumbnailAdapter extends BaseAdapter {
+        private Context mContext;
+        //will get from server
+        private String[] mTrailerImageKey = null;
+        private String[] mTrailerId = null;
+
+
+        public ThumbnailAdapter(Context c) {
+            mContext = c;
+        }
+
+        public int getCount() {
+            if(mTrailerImageKey== null)
+                return 0;
+            return mTrailerImageKey.length;
+        }
+
+        public Object getItem(int position) {
+            return mTrailerImageKey[position];
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
+            if (convertView == null) {
+                // if it's not recycled, initialize some attributes
+                imageView = new ImageView(mContext);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            } else
+                imageView = (ImageView) convertView;
+
+
+            if(mTrailerImageKey != null) {
+                String url = (String)getItem(position);
+                Log.v("In adapter", "The  URL " + getCount());
+                Picasso.with(mContext).load(url).into(imageView);
+            }
+
+            return imageView;
+        }
+
+    }// end ThumbNailAdapter Class
+
 }
