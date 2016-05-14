@@ -1,9 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_posters"
+    android:name="com.example.ghanghan.popularmovies.MoviesFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
-    tools:context=".MainActivity"
+    tools:context="com.example.ghanghan.popularmovies.MoviesFragment"
     tools:ignore="MergeRootFrame">
 
-</FrameLayout>
+</fragment>

@@ -43,8 +43,6 @@ public class MoviesFragment extends Fragment {
     private ImageAdapter thumbnails;
 
 
-    private OnFragmentInteractionListener mListener;
-
     public MoviesFragment() {
         // Required empty public constructor
     }
@@ -72,15 +70,22 @@ public class MoviesFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
                 String iD = thumbnails.movieID[position];
-                //String url = MOVIE_BASE_URL +iD +"?api_key="+ BuildConfig.THE_MOVIE_DB_KEY;
-                Intent openDetail = new Intent(getActivity(), DetailsActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, iD);
-                startActivity(openDetail);
+
+                if (iD != null) {
+                    ((Callback)getActivity()).onItemSelected(iD);
+                }
 
             }
         });
 
         return rootView;
+    }
+
+    public interface Callback{
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(String movieId);
     }
 
     @Override
@@ -98,12 +103,6 @@ public class MoviesFragment extends Fragment {
         thumb.execute(order);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this

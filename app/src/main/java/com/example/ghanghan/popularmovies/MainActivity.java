@@ -2,21 +2,34 @@ package com.example.ghanghan.popularmovies;
 
 //import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements  MoviesFragment.Callback{
+
+    private final String DETAILFRAGMENT_TAG = "DFtag";
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState == null){
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MoviesFragment())
-                            .commit();
+        if(findViewById(R.id.movie_detail_container) != null){
+            //app running on a tablet
+            mTwoPane = true;
+
+            if(savedInstanceState == null){
+                getSupportFragmentManager().beginTransaction().
+                        replace(R.id.movie_detail_container, new DetailsFragment(), DETAILFRAGMENT_TAG);
+            }
+
+        }
+        else{
+            mTwoPane = false;
         }
 
     }
@@ -43,5 +56,31 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(String movieId) {
+        if(mTwoPane){
+            Bundle argument = new Bundle();
+            argument.putString(DetailsFragment.MOVIE_ID, movieId);
+
+            DetailsFragment detailsFragment = new DetailsFragment();
+            detailsFragment.setArguments(argument);
+
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.movie_detail_container, detailsFragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        }
+        else{
+            Intent startDetail = new Intent(this, DetailsActivity.class);
+            startDetail.putExtra(DetailsFragment.MOVIE_ID, movieId);
+            startActivity(startDetail);
+
+        }
+
+    }
+
+    public void expandContent(View v) {
+        DetailsFragment.expandContent(v);// will expand the view containing the reviews
     }
 }

@@ -48,6 +48,8 @@ import java.util.StringTokenizer;
 public class DetailsFragment extends Fragment {
     private static boolean expand = false;
     private ThumbnailAdapter thumbnails;
+    static final String MOVIE_ID = "movie_ID";
+    private String mMovieId;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -65,25 +67,11 @@ public class DetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_details, container, false);
         thumbnails = new ThumbnailAdapter(getActivity());
-        //ImageAdapter will take images from a server and use it to populate
-        //the ListView
-  /*      ListView listView = (ListView)rootView.findViewById(R.id.trailer_horizontal_list);
-        thumbnails = new ThumbnailAdapter(getActivity());
 
-        listView.setAdapter(thumbnails);
+        Bundle arguments = getArguments();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
-                String iD = thumbnails.movieID[position];
-                String url = "http://img.youtube.com/vi/"+""
-                Intent openDetail = new Intent(getActivity(), DetailsActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, iD);
-                startActivity(openDetail);
-
-            }
-        });*/
+        if(arguments != null)
+            mMovieId = arguments.getString(MOVIE_ID);
 
         return rootView;
     }
@@ -108,9 +96,10 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        String url = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        //TODO: use id from bundle instead of intent
+        //String url = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
         FetchInfo MovieData = new FetchInfo();
-        MovieData.execute(url);
+        MovieData.execute(mMovieId);
     }
 
     public class FetchInfo extends AsyncTask<String, Void, String[]> {
