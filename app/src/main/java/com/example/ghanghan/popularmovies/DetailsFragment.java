@@ -365,52 +365,54 @@ public class DetailsFragment extends Fragment {
             ///For trailer thumbnail
             String thumbKeys = strings[strings.length - 1];
             String trailerDes = strings[strings.length-2];
-            Log.v("Trailer Description", trailerDes);
-            Log.v("Null description", trailerDes.substring(0, 4));
-            if(trailerDes.substring(0, 4).equals("null")){
-                thumbKeys = thumbKeys.substring(4);
-                trailerDes = trailerDes.substring(4);
-            }
-            Log.v("Trailer Description", trailerDes);
-            StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
-            int number = parseKeys.countTokens();
-            String thumbUrl[] = new String[number];
-            String keyUrl[] = new String[number];
-            String urlKey = null;
-            //constructing movie poster url
+            if(trailerDes != null) {
+                Log.v("Trailer Description", trailerDes);
+                Log.v("Null description", trailerDes.substring(0, 4));
+                if (trailerDes.substring(0, 4).equals("null")) {
+                    thumbKeys = thumbKeys.substring(4);
+                    trailerDes = trailerDes.substring(4);
+                }
+                Log.v("Trailer Description", trailerDes);
 
-            for (int i = 0; i < number; i++) {
-                urlKey = parseKeys.nextToken();
-                thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
-                keyUrl[i] = urlKey;
-                Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
+                StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
+                int number = parseKeys.countTokens();
+                String thumbUrl[] = new String[number];
+                String keyUrl[] = new String[number];
+                String urlKey = null;
+                //constructing movie poster url
 
-            }
-            //store poster url array inside Image adapter
-            Log.v("Post Ex", "Now in adapter");
-            thumbnails.mTrailerImageKey = thumbUrl;
-            thumbnails.mTrailerId = keyUrl;
+                for (int i = 0; i < number; i++) {
+                    urlKey = parseKeys.nextToken();
+                    thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
+                    keyUrl[i] = urlKey;
+                    Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
 
-            Log.v("Post Ex A", "url in 2nd cell " + thumbUrl[1]);
-            thumbnails.notifyDataSetChanged();
+                }
+                //store poster url array inside Image adapter
+                Log.v("Post Ex", "Now in adapter");
+                thumbnails.mTrailerImageKey = thumbUrl;
+                thumbnails.mTrailerId = keyUrl;
 
-            LinearLayout trailerLayout = (LinearLayout) getActivity().findViewById(R.id.trailer_horizontal_list);
+                thumbnails.notifyDataSetChanged();
 
-            for (int i = 0; i < thumbnails.mTrailerImageKey.length; i++) {
-                final int index = i;
-                View placeHolder = thumbnails.getView(i, null, trailerLayout);
+                LinearLayout trailerLayout = (LinearLayout) getActivity().findViewById(R.id.trailer_horizontal_list);
 
-                trailerLayout.addView(thumbnails.getView(i, placeHolder, trailerLayout));
+                for (int i = 0; i < thumbnails.mTrailerImageKey.length; i++) {
+                    final int index = i;
+                    View placeHolder = thumbnails.getView(i, null, trailerLayout);
 
-                placeHolder.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        String key = thumbnails.mTrailerId[index];
-                        String url = "https://www.youtube.com/watch?v=" + key;
-                        Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(trailerIntent);
-                    }
-                });
+                    trailerLayout.addView(thumbnails.getView(i, placeHolder, trailerLayout));
 
+                    placeHolder.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            String key = thumbnails.mTrailerId[index];
+                            String url = "https://www.youtube.com/watch?v=" + key;
+                            Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            startActivity(trailerIntent);
+                        }
+                    });
+
+                }
             }
         }
     }
