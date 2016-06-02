@@ -22,8 +22,8 @@ public class MovieContract {
 
         //TODO: path and trailer keys will have to be where pictures are stored in the phone
 
+        public static final String COLUMN_FAVOURITE_KEY = "favourite_id";
         public static final String COLUMN_MOVIE_ID = "id"; //used in MoviesFragment
-        public static final String COLUMN_FAVOURITE_ID = "favourite_id";
         public static final String COLUMN_POSTER_PATH = "poster_path";  //used in MoviesFragment
         public static final String COLUMN_ORIGINAL_TITLE = "original_title";//used in Details Fragment
         public static final String COLUMN_STATUS = "status";
@@ -53,29 +53,28 @@ public class MovieContract {
             return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(posterPath).build();
         }
 
-        public static Uri builPopularDetailInformation(String movieId, String poster, String favId,
+        public static Uri buildPopularDetailInformation(String favId, String movieId, String poster,
                                                        String title, String status,
                                                        String voteAverage, String trailers,
                                                        String overview, int numberOfReviews,
                                                        String authors, String reviews){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(poster).appendPath(favId).
+            return CONTENT_URI.buildUpon().appendPath(favId).appendPath(movieId).appendPath(poster).
                     appendPath(title).appendPath(status).appendPath(voteAverage).
                     appendPath(trailers).appendPath(overview).
                     appendPath(Integer.toString(numberOfReviews)).appendPath(authors).
                     appendPath(reviews).build();
         }
 
-
-        public static String getMovieIdFromUri(Uri uri){
-            return uri.getPathSegments().get(1);
+        public static int getFavIdFromUri(Uri uri){
+            return Integer.parseInt(uri.getPathSegments().get(1));
         }
 
-        public static String getMoviePosterFromUri(Uri uri){
+        public static String getMovieIdFromUri(Uri uri){
             return uri.getPathSegments().get(2);
         }
 
-        public static int getFavIdFromUri(Uri uri){
-            return Integer.parseInt(uri.getPathSegments().get(3));
+        public static String getMoviePosterFromUri(Uri uri){
+            return uri.getPathSegments().get(3);
         }
 
         public static String getOriginalTitleFromUri(Uri uri){
@@ -111,13 +110,12 @@ public class MovieContract {
 
     }
 
-    public static final class HighstRatedEntry implements BaseColumns{
+    public static final class HighestRatedEntry implements BaseColumns{
         public static final String TABLE_NAME = "high_rate";
 
         //TODO: path and trailer keys will have to be where pictures are stored in the phone
-
+        public static final String COLUMN_FAVOURITE_KEY = "favourite_id";
         public static final String COLUMN_MOVIE_ID = "id"; //used in MoviesFragment
-        public static final String COLUMN_FAVOURITE_ID = "favourite_id";
         public static final String COLUMN_POSTER_PATH = "poster_path";  //used in MoviesFragment
         public static final String COLUMN_ORIGINAL_TITLE = "original_title";//used in Details Fragment
         public static final String COLUMN_STATUS = "status";
@@ -143,33 +141,32 @@ public class MovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildhightestRatedMovieIdPoster(String movieId, String posterPath){
+        public static Uri buildHightestRatedMovieIdPoster(String movieId, String posterPath){
             return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(posterPath).build();
         }
 
-        public static Uri buildHighestRatedDetailInformation(String movieId, String poster, String favId,
+        public static Uri buildHighestRatedDetailInformation(String favId, String movieId, String poster,
                                                        String title, String status,
                                                        String voteAverage, String trailers,
                                                        String overview, int numberOfReviews,
                                                        String authors, String reviews){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(poster).appendPath(favId).
+            return CONTENT_URI.buildUpon().appendPath(favId).appendPath(movieId).appendPath(poster).
                     appendPath(title).appendPath(status).appendPath(voteAverage).
                     appendPath(trailers).appendPath(overview).
                     appendPath(Integer.toString(numberOfReviews)).appendPath(authors).
                     appendPath(reviews).build();
         }
 
-
-        public static String getMovieIdFromUri(Uri uri){
-            return uri.getPathSegments().get(1);
+        public static int getFavIdFromUri(Uri uri){
+            return Integer.parseInt(uri.getPathSegments().get(1));
         }
 
-        public static String getMoviePosterFromUri(Uri uri){
+        public static String getMovieIdFromUri(Uri uri){
             return uri.getPathSegments().get(2);
         }
 
-        public static int getFavIdFromUri(Uri uri){
-            return Integer.parseInt(uri.getPathSegments().get(3));
+        public static String getMoviePosterFromUri(Uri uri){
+            return uri.getPathSegments().get(3);
         }
 
         public static String getOriginalTitleFromUri(Uri uri){
@@ -205,7 +202,7 @@ public class MovieContract {
 
     }
 
-    public static final class FavoriteMovies implements BaseColumns{
+    public static final class FavoritedEntry implements BaseColumns{
         public static final String TABLE_NAME = "favorite";
 
         public static final String COLUMN_MOVIE_ID = "movie_id";
