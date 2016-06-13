@@ -49,65 +49,6 @@ public class MovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildPopularMovieIdPoster(String movieId, String posterPath){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(posterPath).build();
-        }
-
-        public static Uri buildPopularDetailInformation(String favId, String movieId, String poster,
-                                                       String title, String status,
-                                                       String voteAverage, String trailers,
-                                                       String overview, int numberOfReviews,
-                                                       String authors, String reviews){
-            return CONTENT_URI.buildUpon().appendPath(favId).appendPath(movieId).appendPath(poster).
-                    appendPath(title).appendPath(status).appendPath(voteAverage).
-                    appendPath(trailers).appendPath(overview).
-                    appendPath(Integer.toString(numberOfReviews)).appendPath(authors).
-                    appendPath(reviews).build();
-        }
-
-        public static int getFavIdFromUri(Uri uri){
-            return Integer.parseInt(uri.getPathSegments().get(1));
-        }
-
-        public static String getMovieIdFromUri(Uri uri){
-            return uri.getPathSegments().get(2);
-        }
-
-        public static String getMoviePosterFromUri(Uri uri){
-            return uri.getPathSegments().get(3);
-        }
-
-        public static String getOriginalTitleFromUri(Uri uri){
-            return uri.getPathSegments().get(4);
-        }
-
-        public static String getStatusFromUri(Uri uri){
-            return uri.getPathSegments().get(5);
-        }
-
-        public static String getVoteAverageFromUri(Uri uri){
-            return uri.getPathSegments().get(6);
-        }
-
-        public static String getTrailersFromUri(Uri uri){
-            return uri.getPathSegments().get(7);
-        }
-
-        public static String getOverviewFromUri(Uri uri){
-            return uri.getPathSegments().get(8);
-        }
-        public static String getNumberOfReviews(Uri uri){
-            return uri.getPathSegments().get(9);
-        }
-
-        public static String getAuthors(Uri uri){
-            return uri.getPathSegments().get(10);
-        }
-
-        public static String getReviews(Uri uri){
-            return uri.getPathSegments().get(11);
-        }
-
     }
 
     public static final class HighestRatedEntry implements BaseColumns{
@@ -140,66 +81,7 @@ public class MovieContract {
         public static Uri buildHighestRatedUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-        public static Uri buildHightestRatedMovieIdPoster(String movieId, String posterPath){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(posterPath).build();
-        }
-
-        public static Uri buildHighestRatedDetailInformation(String favId, String movieId, String poster,
-                                                       String title, String status,
-                                                       String voteAverage, String trailers,
-                                                       String overview, int numberOfReviews,
-                                                       String authors, String reviews){
-            return CONTENT_URI.buildUpon().appendPath(favId).appendPath(movieId).appendPath(poster).
-                    appendPath(title).appendPath(status).appendPath(voteAverage).
-                    appendPath(trailers).appendPath(overview).
-                    appendPath(Integer.toString(numberOfReviews)).appendPath(authors).
-                    appendPath(reviews).build();
-        }
-
-        public static int getFavIdFromUri(Uri uri){
-            return Integer.parseInt(uri.getPathSegments().get(1));
-        }
-
-        public static String getMovieIdFromUri(Uri uri){
-            return uri.getPathSegments().get(2);
-        }
-
-        public static String getMoviePosterFromUri(Uri uri){
-            return uri.getPathSegments().get(3);
-        }
-
-        public static String getOriginalTitleFromUri(Uri uri){
-            return uri.getPathSegments().get(4);
-        }
-
-        public static String getStatusFromUri(Uri uri){
-            return uri.getPathSegments().get(5);
-        }
-
-        public static String getVoteAverageFromUri(Uri uri){
-            return uri.getPathSegments().get(6);
-        }
-
-        public static String getTrailersFromUri(Uri uri){
-            return uri.getPathSegments().get(7);
-        }
-
-        public static String getOverviewFromUri(Uri uri){
-            return uri.getPathSegments().get(8);
-        }
-        public static String getNumberOfReviews(Uri uri){
-            return uri.getPathSegments().get(9);
-        }
-
-        public static String getAuthors(Uri uri){
-            return uri.getPathSegments().get(10);
-        }
-
-        public static String getReviews(Uri uri){
-            return uri.getPathSegments().get(11);
-        }
-
+        
     }
 
     public static final class FavoritedEntry implements BaseColumns{
@@ -229,61 +111,6 @@ public class MovieContract {
 
         public static Uri buildFavoriteUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-
-        public static Uri buildFavoriteMovieIdPoster(String movieId, String posterPath){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(posterPath).build();
-        }
-
-        public static Uri buildHighestRatedDetailInformation(String movieId, String poster,
-                                                             String title, String status,
-                                                             String voteAverage, String trailers,
-                                                             String overview, int numberOfReviews,
-                                                             String authors, String reviews){
-            return CONTENT_URI.buildUpon().appendPath(movieId).appendPath(poster).appendPath(title).
-                    appendPath(status).appendPath(voteAverage).appendPath(trailers).
-                    appendPath(overview).appendPath(Integer.toString(numberOfReviews)).
-                    appendPath(authors).appendPath(reviews).build();
-        }
-
-
-        public static String getMovieIdFromUri(Uri uri){
-            return uri.getPathSegments().get(1);
-        }
-
-        public static String getMoviePosterFromUri(Uri uri){
-            return uri.getPathSegments().get(2);
-        }
-
-        public static String getOriginalTitleFromUri(Uri uri){
-            return uri.getPathSegments().get(3);
-        }
-
-        public static String getStatusFromUri(Uri uri){
-            return uri.getPathSegments().get(4);
-        }
-
-        public static String getVoteAverageFromUri(Uri uri){
-            return uri.getPathSegments().get(5);
-        }
-
-        public static String getTrailersFromUri(Uri uri){
-            return uri.getPathSegments().get(6);
-        }
-
-        public static String getOverviewFromUri(Uri uri){
-            return uri.getPathSegments().get(7);
-        }
-        public static String getNumberOfReviews(Uri uri){
-            return uri.getPathSegments().get(8);
-        }
-
-        public static String getAuthors(Uri uri){
-            return uri.getPathSegments().get(9);
-        }
-
-        public static String getReviews(Uri uri){
-            return uri.getPathSegments().get(10);
         }
 
     }
