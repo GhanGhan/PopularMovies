@@ -81,7 +81,7 @@ public class MovieContract {
         public static Uri buildHighestRatedUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-        
+
     }
 
     public static final class FavoritedEntry implements BaseColumns{
