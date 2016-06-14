@@ -334,7 +334,6 @@ public class DetailsFragment extends Fragment {
             for (int i = 0; i < array1.length; i++) {
                 results[i] = array1[i];
             }
-
             for (int i = array1.length; i < array1.length + array2.length; i++) {
                 results[i] = array2[i - array1.length];
             }
@@ -349,7 +348,6 @@ public class DetailsFragment extends Fragment {
             TextView release_date = (TextView) getActivity().findViewById(R.id.movie_release);
             TextView review_tile = (TextView) getActivity().findViewById(R.id.movie_review_tile);
             TextView review_content = (TextView) getActivity().findViewById(R.id.movie_review_content);
-
             ImageView poster = (ImageView) getActivity().findViewById(R.id.thumbnail);
 
             title.setText(strings[0]);
@@ -358,7 +356,6 @@ public class DetailsFragment extends Fragment {
             release_date.setText(strings[3]);
             review_tile.setText("Reviews (" + strings[5] + ")");
             review_content.setText(strings[7]);
-
             Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w500/" + strings[4])
                     .into(poster);
 
@@ -366,54 +363,62 @@ public class DetailsFragment extends Fragment {
             String thumbKeys = strings[strings.length - 1];
             String trailerDes = strings[strings.length-2];
             if(trailerDes != null) {
-                Log.v("Trailer Description", trailerDes);
-                Log.v("Null description", trailerDes.substring(0, 4));
-                if (trailerDes.substring(0, 4).equals("null")) {
-                    thumbKeys = thumbKeys.substring(4);
-                    trailerDes = trailerDes.substring(4);
-                }
-                Log.v("Trailer Description", trailerDes);
-
-                StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
-                int number = parseKeys.countTokens();
-                String thumbUrl[] = new String[number];
-                String keyUrl[] = new String[number];
-                String urlKey = null;
-                //constructing movie poster url
-
-                for (int i = 0; i < number; i++) {
-                    urlKey = parseKeys.nextToken();
-                    thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
-                    keyUrl[i] = urlKey;
-                    Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
-
-                }
-                //store poster url array inside Image adapter
-                Log.v("Post Ex", "Now in adapter");
-                thumbnails.mTrailerImageKey = thumbUrl;
-                thumbnails.mTrailerId = keyUrl;
-
-                thumbnails.notifyDataSetChanged();
-
+                parseTrailerKeys(thumbKeys, trailerDes);
                 LinearLayout trailerLayout = (LinearLayout) getActivity().findViewById(R.id.trailer_horizontal_list);
+                initiateTrailerViews(trailerLayout);
 
-                for (int i = 0; i < thumbnails.mTrailerImageKey.length; i++) {
-                    final int index = i;
-                    View placeHolder = thumbnails.getView(i, null, trailerLayout);
-
-                    trailerLayout.addView(thumbnails.getView(i, placeHolder, trailerLayout));
-
-                    placeHolder.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            String key = thumbnails.mTrailerId[index];
-                            String url = "https://www.youtube.com/watch?v=" + key;
-                            Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                            startActivity(trailerIntent);
-                        }
-                    });
-
-                }
             }
+        }
+    }
+
+
+    private void parseTrailerKeys(String thumbKeys, String trailerDes) {
+        Log.v("Trailer Description", trailerDes);
+        Log.v("Null description", trailerDes.substring(0, 4));
+        if (trailerDes.substring(0, 4).equals("null")) {
+            thumbKeys = thumbKeys.substring(4);
+            trailerDes = trailerDes.substring(4);
+        }
+        Log.v("Trailer Description", trailerDes);
+
+        StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
+        int number = parseKeys.countTokens();
+        String thumbUrl[] = new String[number];
+        String keyUrl[] = new String[number];
+        String urlKey = null;
+        //constructing movie poster url
+
+        for (int i = 0; i < number; i++) {
+            urlKey = parseKeys.nextToken();
+            thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
+            keyUrl[i] = urlKey;
+            Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
+
+        }
+        //store poster url array inside Image adapter
+        Log.v("Post Ex", "Now in adapter");
+        thumbnails.mTrailerImageKey = thumbUrl;
+        thumbnails.mTrailerId = keyUrl;
+
+        thumbnails.notifyDataSetChanged();
+    }
+
+    private void initiateTrailerViews(LinearLayout trailerLayout){
+        for (int i = 0; i < thumbnails.mTrailerImageKey.length; i++) {
+            final int index = i;
+            View placeHolder = thumbnails.getView(i, null, trailerLayout);
+
+            trailerLayout.addView(thumbnails.getView(i, placeHolder, trailerLayout));
+
+            placeHolder.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    String key = thumbnails.mTrailerId[index];
+                    String url = "https://www.youtube.com/watch?v=" + key;
+                    Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(trailerIntent);
+                }
+            });
+
         }
     }
 
@@ -470,7 +475,6 @@ public class DetailsFragment extends Fragment {
                 Log.v("In adapter", "The  URL " + getCount());
                 Picasso.with(mContext).load(url).into(imageView);
             }
-
             return imageView;
         }
 
