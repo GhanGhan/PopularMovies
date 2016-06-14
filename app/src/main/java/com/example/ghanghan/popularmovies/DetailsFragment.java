@@ -350,6 +350,7 @@ public class DetailsFragment extends Fragment {
             TextView review_content = (TextView) getActivity().findViewById(R.id.movie_review_content);
             ImageView poster = (ImageView) getActivity().findViewById(R.id.thumbnail);
 
+            Log.v("Value of title", strings.toString());
             title.setText(strings[0]);
             plot.setText(strings[1]);
             rating.setText(strings[2] + "/10");
