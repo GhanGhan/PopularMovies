@@ -15,8 +15,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "PopularMovies.db";
 
-    public MovieDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public MovieDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         //create popular, rated, and favorites table
         final String SQL_CREATE_POPULAR_TABLE = "CREATE TABLE " + PopularEntry.TABLE_NAME + "(" +
                 PopularEntry._ID + "INTEGER PRIMARY KEY, " +
-                PopularEntry.COLUMN_FAVOURITE_KEY + " INTEGER NOT NULL, " +
+                PopularEntry.COLUMN_FAVORITE_KEY + " INTEGER NOT NULL, " +
                 PopularEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
                 PopularEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
                 PopularEntry.COLUMN_ORIGINAL_TITLE +" STRING NOT NULL, "+
@@ -35,12 +35,12 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 PopularEntry.COLUMN_NUMBER_OF_REVIEWS + " INTEGER NOT NULL, " +
                 PopularEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
                 PopularEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL" +
-                "FOREIGN KEY " + "(" + PopularEntry.COLUMN_FAVOURITE_KEY + ")" +
+                "FOREIGN KEY " + "(" + PopularEntry.COLUMN_FAVORITE_KEY + ")" +
                 "REFERENCES " + FavoritedEntry.TABLE_NAME + "(" + FavoritedEntry._ID + ");";
 
         final String SQL_CREATE_HIGH_RATED_TABLE = "CREATE TABLE "+HighestRatedEntry.TABLE_NAME+"("+
                 HighestRatedEntry._ID + "INTEGER PRIMARY KEY, " +
-                HighestRatedEntry.COLUMN_FAVOURITE_KEY + " INTEGER NOT NULL, " +
+                HighestRatedEntry.COLUMN_FAVORITE_KEY + " INTEGER NOT NULL, " +
                 HighestRatedEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
                 HighestRatedEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
                 HighestRatedEntry.COLUMN_ORIGINAL_TITLE +" STRING NOT NULL, "+
@@ -51,10 +51,10 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 HighestRatedEntry.COLUMN_NUMBER_OF_REVIEWS + " INT NOT NULL, " +
                 HighestRatedEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
                 HighestRatedEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL " +
-                "FOREIGN KEY " + "(" + HighestRatedEntry.COLUMN_FAVOURITE_KEY + ")" +
+                "FOREIGN KEY " + "(" + HighestRatedEntry.COLUMN_FAVORITE_KEY + ")" +
                 "REFERENCES " + FavoritedEntry.TABLE_NAME + "(" + FavoritedEntry._ID + ");";
 
-        final String SQL_CREATE_FAVOURITED_TABLE = "CREATE TABLE "+FavoritedEntry.TABLE_NAME+"("+
+        final String SQL_CREATE_FAVORITED_TABLE = "CREATE TABLE "+FavoritedEntry.TABLE_NAME+"("+
                 FavoritedEntry._ID + "INTEGER PRIMARY KEY, " +
                 FavoritedEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
                 FavoritedEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
@@ -66,6 +66,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 FavoritedEntry.COLUMN_NUMBER_OF_REVIEWS + " INT NOT NULL, " +
                 FavoritedEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
                 FavoritedEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL);";
+
+        //TODO: create tables with sqLiteDatabase.execSQL
 
     }
 

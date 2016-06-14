@@ -20,6 +20,7 @@ import java.sql.SQLDataException;
 public class MovieProvider extends ContentProvider {
 
     private MovieDbHelper movieDbHelper;
+    //The URI Matcher used by the content Provier
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     public static final int POPULAR = 100;
@@ -29,13 +30,10 @@ public class MovieProvider extends ContentProvider {
     public static final int FAVORITE = 300;
     public static final int FAVORITE_WITH_ID = 301;
 
-    public MovieProvider() {
-        super();
-    }
-
     @Override
     public boolean onCreate() {
-        return false;
+         movieDbHelper = new MovieDbHelper(getContext());
+        return true;
     }
 
 
@@ -52,8 +50,8 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_POPULAR + "/#", POPULAR_WITH_ID);
         matcher.addURI(authority, MovieContract.PATH_HIGH_RATING, HIGHEST_RATED);
         matcher.addURI(authority, MovieContract.PATH_HIGH_RATING + "/#", HIGHEST_RATED_WITH_ID);
-        matcher.addURI(authority, MovieContract.PATH_FAVOURITE, FAVORITE);
-        matcher.addURI(authority, MovieContract.PATH_FAVOURITE + "/#", FAVORITE_WITH_ID);
+        matcher.addURI(authority, MovieContract.PATH_FAVORITE, FAVORITE);
+        matcher.addURI(authority, MovieContract.PATH_FAVORITE + "/#", FAVORITE_WITH_ID);
 
         return matcher;
     }
@@ -62,6 +60,7 @@ public class MovieProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(Uri uri) {
+        //Use the URI matcher to determine what kind of URI this is
         final int match = sUriMatcher.match(uri);
 
         switch(match){
@@ -80,7 +79,6 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
     }
 
     @Nullable
@@ -90,44 +88,37 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = movieDbHelper.getReadableDatabase();
         Cursor returnCursor;
         switch(sUriMatcher.match(uri)){
-            case POPULAR: {
+            case POPULAR: //"popular"
                 returnCursor = db.query(PopularEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, sortOrder);
                 break;
-            }
-            case POPULAR_WITH_ID: {
+            case POPULAR_WITH_ID: //"popular/#"
                 returnCursor = db.query(PopularEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, null);
                 break;
-            }
-            case HIGHEST_RATED: {
+
+            case HIGHEST_RATED: //"highest_rated"
                 returnCursor = db.query(HighestRatedEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, sortOrder);
                 break;
-            }
-            case HIGHEST_RATED_WITH_ID: {
+            case HIGHEST_RATED_WITH_ID: //"highest_rated/#"
                 returnCursor = db.query(HighestRatedEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, null);
                 break;
-            }
-            case FAVORITE: {
+            case FAVORITE: //"favorite"
                 returnCursor = db.query(FavoritedEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, sortOrder);
                 break;
-            }
-            case FAVORITE_WITH_ID: {
+            case FAVORITE_WITH_ID: //"favorite/#"
                 returnCursor = db.query(FavoritedEntry.TABLE_NAME, projection, selection,
                         selectionArgs, null, null, null);
                 break;
-            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         returnCursor.setNotificationUri(getContext().getContentResolver(), uri);
-
         return returnCursor;
     }
-
 
     @Nullable
     @Override
@@ -138,30 +129,27 @@ public class MovieProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
 
         switch(match){
-            case POPULAR:{
+            case POPULAR:
                 _id = db.insert(PopularEntry.TABLE_NAME, null, contentValues);
                 if(_id > 0)
                     retUri = PopularEntry.buildPopularUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
-            }
-            case HIGHEST_RATED:{
+            case HIGHEST_RATED:
                 _id = db.insert(HighestRatedEntry.TABLE_NAME, null, contentValues);
                 if(_id > 0)
                     retUri = HighestRatedEntry.buildHighestRatedUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
-            }
-            case FAVORITE:{
+            case FAVORITE:
                 _id = db.insert(FavoritedEntry.TABLE_NAME, null, contentValues);
                 if(_id > 0)
                     retUri = FavoritedEntry.buildFavoriteUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into" + uri);
                 break;
-            }
             default:
                 throw new UnsupportedOperationException("Unknown Uri " + uri);
         }
@@ -179,18 +167,15 @@ public class MovieProvider extends ContentProvider {
         if(null == selection) selection ="1";
 
         switch(match){
-            case POPULAR: {
+            case POPULAR:
                 retRowsDelete = db.delete(PopularEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            }
-            case HIGHEST_RATED:{
+            case HIGHEST_RATED:
                 retRowsDelete = db.delete(HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            }
-            case FAVORITE:{
+            case FAVORITE:
                 retRowsDelete = db.delete(HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            }
             default:
                 throw new UnsupportedOperationException("Unknown uri " + uri);
         }
@@ -209,21 +194,18 @@ public class MovieProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
 
         switch(match){
-            case POPULAR:{
+            case POPULAR:
                 retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
-            }
-            case HIGHEST_RATED:{
+            case HIGHEST_RATED:
                 retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
-            }
-            case FAVORITE:{
+            case FAVORITE:
                 retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
-            }
             default:
                 throw new UnsupportedOperationException("Unknown uri " + uri);
         }
@@ -232,5 +214,59 @@ public class MovieProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         db.close();
         return retUpRows;
+    }
+
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = movieDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int returnCount = 0;
+        switch(match){
+            case POPULAR:
+                db.beginTransaction();
+                try{
+                    for(ContentValues value: values){
+                        long _id = db.insert(PopularEntry.TABLE_NAME, null, value);
+                        if(_id != -1)
+                            returnCount++;
+                    }
+                    db.setTransactionSuccessful();
+                }finally{
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount; // end case Popular
+            case HIGHEST_RATED:
+                db.beginTransaction();
+                try{
+                    for(ContentValues value: values){
+                        long _id = db.insert(HighestRatedEntry.TABLE_NAME, null, value);
+                        if(_id != -1)
+                            returnCount++;
+                    }
+                    db.setTransactionSuccessful();
+                }finally{
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;// end case Highest Rated
+            case FAVORITE:
+                db.beginTransaction();
+                try{
+                    for(ContentValues value: values){
+                        long _id = db.insert(FavoritedEntry.TABLE_NAME, null, value);
+                        if (_id != -1)
+                            returnCount++;
+                    }
+                    db.setTransactionSuccessful();
+                }finally{
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+        }
+
+        return super.bulkInsert(uri, values);
     }
 }
