@@ -18,19 +18,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import com.example.ghanghan.popularmovies.ImageAdapter;
 
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 
 
 public class MoviesFragment extends Fragment {
@@ -79,7 +66,7 @@ public class MoviesFragment extends Fragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(String movieId);
+        void onItemSelected(String movieId);
     }
 
     @Override
@@ -96,5 +83,5 @@ public class MoviesFragment extends Fragment {
                 getString(R.string.pref_sort_default));
         thumb.execute(order);
     }
-    
+
 }
