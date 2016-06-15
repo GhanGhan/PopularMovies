@@ -44,6 +44,10 @@ public class ImageAdapter extends BaseAdapter {
         return movieID[position];
     }
 
+    public int getNumberOfMovies(){
+        return movieID.length;
+    }
+
     public long getItemId(int position) {
         return 0;
     }

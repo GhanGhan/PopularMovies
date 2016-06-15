@@ -23,7 +23,7 @@ public class MovieContract {
 
         //TODO: path and trailer keys will have to be where pictures are stored in the phone, large text (overview and reviews) may be stored in txt files
         //Column with the foreign key into the favorite table
-        public static final String COLUMN_FAVORITE_KEY = "favourite_id";
+        public static final String COLUMN_FAVORITE_KEY = "favorite_id";
         //Unique to each movie, used to access movie specific data from data
         //Also used as name of folder containing movie data (trailer keys, poster etc.)
         public static final String COLUMN_MOVIE_ID = "id"; //used in MoviesFragment

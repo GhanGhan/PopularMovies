@@ -22,52 +22,55 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         //create popular, rated, and favorites table
-        final String SQL_CREATE_POPULAR_TABLE = "CREATE TABLE " + PopularEntry.TABLE_NAME + "(" +
-                PopularEntry._ID + "INTEGER PRIMARY KEY, " +
+        final String SQL_CREATE_POPULAR_TABLE = "CREATE TABLE " + PopularEntry.TABLE_NAME + " (" +
+                PopularEntry._ID + " INTEGER PRIMARY KEY, " +
                 PopularEntry.COLUMN_FAVORITE_KEY + " INTEGER NOT NULL, " +
-                PopularEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
-                PopularEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
-                PopularEntry.COLUMN_ORIGINAL_TITLE +" STRING NOT NULL, "+
-                PopularEntry.COLUMN_STATUS + "STRING NOT NULL, " +
+                PopularEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, " +
+                PopularEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                PopularEntry.COLUMN_ORIGINAL_TITLE +" TEXT NOT NULL, "+
+                PopularEntry.COLUMN_STATUS + " TEXT NOT NULL, " +
                 PopularEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-                PopularEntry.COLUMN_TRAILER_KEYS + " STRING NOT NULL, " +
-                PopularEntry.COLUMN_OVERVIEW + " STRING NOT NULL, " +
+                PopularEntry.COLUMN_TRAILER_KEYS + " TEXT NOT NULL, " +
+                PopularEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 PopularEntry.COLUMN_NUMBER_OF_REVIEWS + " INTEGER NOT NULL, " +
-                PopularEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
-                PopularEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL" +
-                "FOREIGN KEY " + "(" + PopularEntry.COLUMN_FAVORITE_KEY + ")" +
-                "REFERENCES " + FavoritedEntry.TABLE_NAME + "(" + FavoritedEntry._ID + ");";
+                PopularEntry.COLUMN_AUTHORS + " TEXT NOT NULL, " +
+                PopularEntry.COLUMN_REVIEW_CONTENT + " TEXT NOT NULL, " +
+                "FOREIGN KEY (" + PopularEntry.COLUMN_FAVORITE_KEY + ") " +
+                "REFERENCES " + FavoritedEntry.TABLE_NAME + " (" + FavoritedEntry._ID + "));";
 
-        final String SQL_CREATE_HIGH_RATED_TABLE = "CREATE TABLE "+HighestRatedEntry.TABLE_NAME+"("+
-                HighestRatedEntry._ID + "INTEGER PRIMARY KEY, " +
+        final String SQL_CREATE_HIGH_RATED_TABLE = "CREATE TABLE "+HighestRatedEntry.TABLE_NAME+" ("+
+                HighestRatedEntry._ID + " INTEGER PRIMARY KEY, " +
                 HighestRatedEntry.COLUMN_FAVORITE_KEY + " INTEGER NOT NULL, " +
-                HighestRatedEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
-                HighestRatedEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
-                HighestRatedEntry.COLUMN_ORIGINAL_TITLE +" STRING NOT NULL, "+
-                HighestRatedEntry.COLUMN_STATUS + "STRING NOT NULL, " +
+                HighestRatedEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, " +
+                HighestRatedEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                HighestRatedEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, "+
+                HighestRatedEntry.COLUMN_STATUS + " TEXT NOT NULL, " +
                 HighestRatedEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-                HighestRatedEntry.COLUMN_TRAILER_KEYS + " STRING NOT NULL, " +
-                HighestRatedEntry.COLUMN_OVERVIEW + " STRING NOT NULL, " +
-                HighestRatedEntry.COLUMN_NUMBER_OF_REVIEWS + " INT NOT NULL, " +
-                HighestRatedEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
-                HighestRatedEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL " +
-                "FOREIGN KEY " + "(" + HighestRatedEntry.COLUMN_FAVORITE_KEY + ")" +
-                "REFERENCES " + FavoritedEntry.TABLE_NAME + "(" + FavoritedEntry._ID + ");";
+                HighestRatedEntry.COLUMN_TRAILER_KEYS + " TEXT NOT NULL, " +
+                HighestRatedEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                HighestRatedEntry.COLUMN_NUMBER_OF_REVIEWS + " INTEGER NOT NULL, " +
+                HighestRatedEntry.COLUMN_AUTHORS + " TEXT NOT NULL, " +
+                HighestRatedEntry.COLUMN_REVIEW_CONTENT + " TEXT NOT NULL, " +
+                "FOREIGN KEY (" + HighestRatedEntry.COLUMN_FAVORITE_KEY + ") " +
+                "REFERENCES " + FavoritedEntry.TABLE_NAME + " (" + FavoritedEntry._ID + "));";
 
-        final String SQL_CREATE_FAVORITED_TABLE = "CREATE TABLE "+FavoritedEntry.TABLE_NAME+"("+
-                FavoritedEntry._ID + "INTEGER PRIMARY KEY, " +
-                FavoritedEntry.COLUMN_MOVIE_ID + "STRING NOT NULL," +
-                FavoritedEntry.COLUMN_POSTER_PATH + " STRING NOT NULL," +
-                FavoritedEntry.COLUMN_ORIGINAL_TITLE +" STRING NOT NULL, "+
-                FavoritedEntry.COLUMN_STATUS + "STRING NOT NULL, " +
+        final String SQL_CREATE_FAVORITED_TABLE = "CREATE TABLE "+FavoritedEntry.TABLE_NAME +" (" +
+                FavoritedEntry._ID + " INTEGER PRIMARY KEY, " +
+                FavoritedEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, " +
+                FavoritedEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                FavoritedEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, "+
+                FavoritedEntry.COLUMN_STATUS + " TEXT NOT NULL, " +
                 FavoritedEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-                FavoritedEntry.COLUMN_TRAILER_KEYS + " STRING NOT NULL, " +
-                FavoritedEntry.COLUMN_OVERVIEW + " STRING NOT NULL, " +
-                FavoritedEntry.COLUMN_NUMBER_OF_REVIEWS + " INT NOT NULL, " +
-                FavoritedEntry.COLUMN_AUTHORS + " STRING NOT NULL, " +
-                FavoritedEntry.COLUMN_REVIEW_CONTENT + "STRING NOT NULL);";
+                FavoritedEntry.COLUMN_TRAILER_KEYS + " TEXT NOT NULL, " +
+                FavoritedEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                FavoritedEntry.COLUMN_NUMBER_OF_REVIEWS + " INTEGER NOT NULL, " +
+                FavoritedEntry.COLUMN_AUTHORS + " TEXT NOT NULL, " +
+                FavoritedEntry.COLUMN_REVIEW_CONTENT + " TEXT NOT NULL);";
 
-        //TODO: create tables with sqLiteDatabase.execSQL
+
+        sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_HIGH_RATED_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_FAVORITED_TABLE);
 
     }
 
