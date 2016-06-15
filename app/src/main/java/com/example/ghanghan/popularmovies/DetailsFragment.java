@@ -101,7 +101,7 @@ public class DetailsFragment extends Fragment {
         FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails);
         MovieData.execute(mMovieId);
     }
-    
+
     public static void expandContent(View view){
         TextView content = (TextView)view.getRootView().findViewById(R.id.movie_review_content);
         if(expand){

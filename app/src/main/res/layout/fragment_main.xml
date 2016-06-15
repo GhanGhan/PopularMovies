@@ -4,14 +4,29 @@
     android:layout_height="match_parent"
     tools:context="com.example.ghanghan.popularmovies.MoviesFragment">
 
-    <GridView
-        android:id="@+id/thumbnail_grid"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:gravity="center">
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/database_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Load into database"
+            android:layout_alignParentTop="true"
+            />
 
-    </GridView>
+        <GridView
+            android:id="@+id/thumbnail_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth"
+            android:gravity="center"
+            android:layout_below="@+id/database_button">
+
+        </GridView>
+
+    </RelativeLayout>
+
 
 </FrameLayout>
