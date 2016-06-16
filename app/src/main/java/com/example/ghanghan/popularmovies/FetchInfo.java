@@ -307,6 +307,7 @@ public class FetchInfo extends AsyncTask<String, Void, String[]> {
             initiateTrailerViews(trailerLayout);
 
         }
+
     }
     private void parseTrailerKeys(String thumbKeys, String trailerDes) {
         Log.v("Trailer Description", trailerDes);

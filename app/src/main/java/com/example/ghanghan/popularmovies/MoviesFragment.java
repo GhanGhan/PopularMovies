@@ -14,13 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import com.example.ghanghan.popularmovies.ImageAdapter;
 
 
 
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment implements View.OnClickListener {
     private ImageAdapter thumbnails;
 
 
@@ -45,6 +46,9 @@ public class MoviesFragment extends Fragment {
         thumbnails = new ImageAdapter(getActivity());
 
         gridView.setAdapter(thumbnails);
+        //for the database button
+        Button dataButton = (Button)rootView.findViewById(R.id.database_button);
+        dataButton.setOnClickListener(this);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -53,7 +57,7 @@ public class MoviesFragment extends Fragment {
                 String iD = thumbnails.getMovieID(position);
 
                 if (iD != null) {
-                    ((Callback)getActivity()).onItemSelected(iD);
+                    ((Callback) getActivity()).onItemSelected(iD);
                 }
 
             }
@@ -84,4 +88,12 @@ public class MoviesFragment extends Fragment {
         thumb.execute(order);
     }
 
+    //store data specific shit in database
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.database_button) {
+            FetchMovieInfo movieInfo = new FetchMovieInfo();
+            movieInfo.execute(thumbnails.getMovieIdArray());
+        }
+    }
 }

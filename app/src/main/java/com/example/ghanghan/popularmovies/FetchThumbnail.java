@@ -151,12 +151,11 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         thumbnails.setThumbIds(posterUrl);
         thumbnails.setMovieID(movieID);
         thumbnails.notifyDataSetChanged();
+        //FetchMovieInfo movieInfo = new FetchMovieInfo();
+        //movieInfo.execute(thumbnails.getMovieIdArray());
 
     }
-    //store data specific shit in database
-    private void updateDatabase(){
-        int numberOfMovies = thumbnails.getNumberOfMovies();
-    }
+
 
 
 }

@@ -13,6 +13,7 @@
             android:layout_height="wrap_content"
             android:text="Load into database"
             android:layout_alignParentTop="true"
+
             />
 
         <GridView

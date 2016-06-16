@@ -68,9 +68,9 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 FavoritedEntry.COLUMN_REVIEW_CONTENT + " TEXT NOT NULL);";
 
 
-        sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_HIGH_RATED_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_FAVORITED_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_HIGH_RATED_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_FAVORITED_TABLE);
 
     }
 
