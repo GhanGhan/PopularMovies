@@ -98,7 +98,7 @@ public class DetailsFragment extends Fragment {
         super.onStart();
         //TODO: use id from bundle instead of intent
         //String url = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails);
+        FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails, mMovieId);
         MovieData.execute(mMovieId);
     }
 

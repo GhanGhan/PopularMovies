@@ -3,6 +3,7 @@ package com.example.ghanghan.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -33,12 +35,41 @@ import java.util.StringTokenizer;
 public class FetchInfo extends AsyncTask<String, Void, String[]> {
     private FragmentActivity mActivity;
     private ThumbnailAdapter mThumbnailAdapter;
+    private String movieID;
 
-    public FetchInfo (FragmentActivity activity, ThumbnailAdapter thumbnailAdapter){
+    public FetchInfo (FragmentActivity activity, ThumbnailAdapter thumbnailAdapter, String id){
         //mContext = context;
         mActivity = activity;
         mThumbnailAdapter = thumbnailAdapter;
+        movieID = id;
     }
+
+    public final String[] movietext = {
+            PopularEntry.COLUMN_MOVIE_ID,
+            PopularEntry.COLUMN_ORIGINAL_TITLE,
+            PopularEntry.COLUMN_OVERVIEW,
+            PopularEntry.COLUMN_VOTE_AVERAGE,
+            PopularEntry.COLUMN_STATUS,
+            PopularEntry.COLUMN_POSTER_PATH,
+            PopularEntry.COLUMN_NUMBER_OF_REVIEWS,
+            PopularEntry.COLUMN_AUTHORS,
+            PopularEntry.COLUMN_REVIEW_CONTENT,
+            PopularEntry.COLUMN_TRAILER_KEYS
+    };
+
+    // these constants correspond to the projection defined above, and must change if the
+    // projection changes
+    private static final int COL_MOVIE_ID = 0;
+    private static final int COL_ORIGINAL_TITLE = 1;
+    private static final int COL_OVERVIEW = 2;
+    private static final int COL_VOTE_AVERAGE = 3;
+    private static final int COL_STATUS = 4;
+    public static final int COL_POSTER_PATH = 5;
+    public static final int COL_NUMBER_OF_REVIEWS = 6;
+    public static final int COL_AUTHORS = 7;
+    public static final int COL_REVIEW_CONTENT = 8;
+    public static final int COL_TRAILER_KEYS = 9;
+
 
 
     @Override
@@ -280,6 +311,12 @@ public class FetchInfo extends AsyncTask<String, Void, String[]> {
 
     @Override
     protected void onPostExecute(String[] strings) {
+        //Use database to populate textViews
+        String[] idArray = new String[1];
+        idArray[0] = movieID;
+        Cursor testCursor = mActivity.getContentResolver().query(PopularEntry.CONTENT_URI,
+                movietext, PopularEntry.COLUMN_MOVIE_ID + " = ?",  idArray, null);
+
         TextView title = (TextView) mActivity.findViewById(R.id.movie_title);
         TextView plot = (TextView) mActivity.findViewById(R.id.movie_plot);
         TextView rating = (TextView) mActivity.findViewById(R.id.movie_rating);
@@ -288,35 +325,62 @@ public class FetchInfo extends AsyncTask<String, Void, String[]> {
         TextView review_content = (TextView) mActivity.findViewById(R.id.movie_review_content);
         ImageView poster = (ImageView) mActivity.findViewById(R.id.thumbnail);
 
-        Log.v("Value of title", strings.toString());
-        title.setText(strings[0]);
-        plot.setText(strings[1]);
-        rating.setText(strings[2] + "/10");
-        release_date.setText(strings[3]);
-        review_tile.setText("Reviews (" + strings[5] + ")");
-        review_content.setText(strings[7]);
-        Picasso.with(mActivity).load("http://image.tmdb.org/t/p/w500/" + strings[4])
-                .into(poster);
+        if(testCursor.moveToFirst()){
+            title.setText(testCursor.getString(COL_ORIGINAL_TITLE));
+            plot.setText(testCursor.getString(COL_OVERVIEW));
+            rating.setText(testCursor.getString(COL_VOTE_AVERAGE)+ "/10");
+            release_date.setText(testCursor.getString(COL_STATUS));
+            review_tile.setText("Reviews (" + testCursor.getString(COL_NUMBER_OF_REVIEWS) + ")");
+            review_content.setText(testCursor.getString(COL_REVIEW_CONTENT));
+            Picasso.with(mActivity).load("http://image.tmdb.org/t/p/w500/" +
+                    testCursor.getString(COL_POSTER_PATH)).into(poster);
+            Log.v("Loaded from database", testCursor.getString(COL_ORIGINAL_TITLE));
+            ///For trailer thumbnail
+            String thumbKeys = testCursor.getString(COL_TRAILER_KEYS);
+            String trailerDes = strings[strings.length-2];
+            if(trailerDes != null) {
+                parseTrailerKeys(thumbKeys, trailerDes);
+                LinearLayout trailerLayout = (LinearLayout)mActivity.findViewById(R.id.trailer_horizontal_list);
+                initiateTrailerViews(trailerLayout);
 
-        ///For trailer thumbnail
-        String thumbKeys = strings[strings.length - 1];
-        String trailerDes = strings[strings.length-2];
-        if(trailerDes != null) {
-            parseTrailerKeys(thumbKeys, trailerDes);
-            LinearLayout trailerLayout = (LinearLayout)mActivity.findViewById(R.id.trailer_horizontal_list);
-            initiateTrailerViews(trailerLayout);
-
+            }
+            testCursor.close();
+            Log.v("Cursor status", "closed");
         }
+        else {
+
+            Log.v("Value of title", strings.toString());
+            title.setText(strings[0]);
+            plot.setText(strings[1]);
+            rating.setText(strings[2] + "/10");
+            release_date.setText(strings[3]);
+            review_tile.setText("Reviews (" + strings[5] + ")");
+            review_content.setText(strings[7]);
+            Picasso.with(mActivity).load("http://image.tmdb.org/t/p/w500/" + strings[4])
+                    .into(poster);
+            ///For trailer thumbnail
+            String thumbKeys = strings[strings.length - 1];
+            String trailerDes = strings[strings.length-2];
+            if(trailerDes != null) {
+                parseTrailerKeys(thumbKeys, trailerDes);
+                LinearLayout trailerLayout = (LinearLayout)mActivity.findViewById(R.id.trailer_horizontal_list);
+                initiateTrailerViews(trailerLayout);
+
+            }
+        }
+
+
+
 
     }
     private void parseTrailerKeys(String thumbKeys, String trailerDes) {
-        Log.v("Trailer Description", trailerDes);
-        Log.v("Null description", trailerDes.substring(0, 4));
+        //Log.v("Trailer Description", trailerDes);
+        //Log.v("Null description", trailerDes.substring(0, 4));
         if (trailerDes.substring(0, 4).equals("null")) {
             thumbKeys = thumbKeys.substring(4);
             trailerDes = trailerDes.substring(4);
         }
-        Log.v("Trailer Description", trailerDes);
+        //Log.v("Trailer Description", trailerDes);
 
         StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
         int number = parseKeys.countTokens();
@@ -329,7 +393,7 @@ public class FetchInfo extends AsyncTask<String, Void, String[]> {
             urlKey = parseKeys.nextToken();
             thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
             keyUrl[i] = urlKey;
-            Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
+            //Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
 
         }
         //store poster url array inside Image adapter
