@@ -3,6 +3,7 @@ package com.example.ghanghan.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +19,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import com.example.ghanghan.popularmovies.ImageAdapter;
-
+import com.example.ghanghan.popularmovies.data.MovieContract;
 
 
 public class MoviesFragment extends Fragment implements View.OnClickListener {
@@ -49,6 +50,15 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
         //for the database button
         Button dataButton = (Button)rootView.findViewById(R.id.database_button);
         dataButton.setOnClickListener(this);
+
+        //TESTING THE DATABASE
+        String[] testArray = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
+        Cursor testCursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.buildPopularUri(10),
+                testArray, null,null, null);
+        if(testCursor.moveToFirst())
+            dataButton.setText(testCursor.getString(0));
+        Log.v("button title", testCursor.getString(0));
+        testCursor.close();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -92,7 +102,7 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.database_button) {
-            FetchMovieInfo movieInfo = new FetchMovieInfo();
+            FetchMovieInfo movieInfo = new FetchMovieInfo(getActivity().getApplicationContext());
             movieInfo.execute(thumbnails.getMovieIdArray());
         }
     }

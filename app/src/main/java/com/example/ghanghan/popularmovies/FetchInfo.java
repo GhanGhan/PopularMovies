@@ -137,7 +137,7 @@ public class FetchInfo extends AsyncTask<String, Void, String[]> {
             discoverString = buffer.toString();
             reviewString = bufferReview.toString();
             trailerString = bufferTrailer.toString();
-            Log.v("Data: ", discoverString);
+            Log.v("data: ", discoverString);
             Log.v("Data2:", reviewString);
             Log.v("Data3:", trailerString);
 

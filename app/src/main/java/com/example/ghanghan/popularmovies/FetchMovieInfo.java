@@ -1,20 +1,12 @@
 package com.example.ghanghan.popularmovies;
 
-import com.example.ghanghan.popularmovies.Data.MovieContract.PopularEntry;
-import android.app.Activity;
+import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
+
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,13 +19,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.StringTokenizer;
 
 /**
  * Created by GhanGhan on 6/14/2016.
  */
 public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
 
+    Context mContext;
+    public FetchMovieInfo(Context context){
+        mContext = context;
+    }
     @Override
     protected String[][] doInBackground(String... strings) {
         //strings is the array of movie iD's
@@ -49,7 +44,7 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         String trailerString = null;
         //parsed movie and movie review data
         String dataMovie[], dataReview[], dataTrailer[], movieDataArray[];
-        //Movie Data will be held in 2-d array before uploaded in database
+        //Movie data will be held in 2-d array before uploaded in database
         int numberOfMovies = strings.length;
         String[][] allMovieData = new String[numberOfMovies][];
 
@@ -136,7 +131,7 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 discoverString = buffer.toString();
                 reviewString = bufferReview.toString();
                 trailerString = bufferTrailer.toString();
-                Log.v("Data: ", discoverString);
+                Log.v("data: ", discoverString);
                 Log.v("Data2:", reviewString);
                 Log.v("Data3:", trailerString);
 
@@ -304,10 +299,8 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         [8] - content
         [10]- key
          */
-       ContentValues[] values = new ContentValues[strings.length];
-
-
-        for (int i = 0; i <strings.length ; i++) {
+        ContentValues[] values = new ContentValues[strings.length];
+        for (int i = 0; i < strings.length; i++) {
             values[i] = new ContentValues(11);
             values[i].put(PopularEntry.COLUMN_FAVORITE_KEY, -1);
             values[i].put(PopularEntry.COLUMN_MOVIE_ID, strings[i][0]);
@@ -320,8 +313,10 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
             values[i].put(PopularEntry.COLUMN_AUTHORS, strings[i][7]);
             values[i].put(PopularEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
             values[i].put(PopularEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
-
         }
+        mContext.getContentResolver().bulkInsert(PopularEntry.CONTENT_URI, values);
+
+        //Log.v("Movie Title", mContext.getContentResolver().q)
     }
 
 
