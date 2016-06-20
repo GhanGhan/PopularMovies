@@ -77,20 +77,7 @@ public class MoviesFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        //TESTING THE DATABASE
-        String[] testArray = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
-        Cursor testCursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.buildPopularUri(10),
-                testArray, null,null, null);
-        if(testCursor.moveToFirst()){//if database (popular) has been updated
-            LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,getActivity().getApplicationContext());
-            loadMoviePoster.loadImages();
-            Log.v(LOG_TAG, "load from db");
-        }
-        else {
-            updateMovieData();//getmovie data from server
-            Log.v(LOG_TAG, "load from server");
-        }
-        testCursor.close();
+        updateData();
     }
 
     public void updateMovieData(){
@@ -99,6 +86,46 @@ public class MoviesFragment extends Fragment{
         String order = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
         thumb.execute(order);
+    }
+
+    public void updateData(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String order = prefs.getString(getString(R.string.pref_sort_key),
+                getString(R.string.pref_sort_default));
+        if(order.equals("popularity.desc")){
+            String[] testArrayPopular = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
+            Cursor testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.PopularEntry.buildPopularUri(10),
+                            testArrayPopular, null, null, null);
+            if(testCursor.moveToFirst()){//if database (popular) has been updated
+                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
+                        getActivity().getApplicationContext(), order);
+                loadMoviePoster.loadImages();
+                Log.v(LOG_TAG, "load from db");
+            }
+            else {
+                updateMovieData();//getmovie data from server
+                Log.v(LOG_TAG, "load from server");
+            }
+            testCursor.close();
+        }
+        else if(order.equals("vote_average.desc")){
+            String[] testArrayHightRate = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
+            Cursor testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.HighestRatedEntry.buildHighestRatedUri(10),
+                            testArrayHightRate, null, null, null);
+            if(testCursor.moveToFirst()){//if database (high rate) has been updated
+                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
+                        getActivity().getApplicationContext(), order);
+                loadMoviePoster.loadImages();
+                Log.v(LOG_TAG, "load from db");
+            }
+            else {
+                updateMovieData();//getmovie data from server
+                Log.v(LOG_TAG, "load from server");
+            }
+            testCursor.close();
+        }
     }
 
 }

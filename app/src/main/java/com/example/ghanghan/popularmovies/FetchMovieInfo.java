@@ -1,11 +1,13 @@
 package com.example.ghanghan.popularmovies;
 
 import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
-
+import com.example.ghanghan.popularmovies.data.MovieContract.HighestRatedEntry;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -299,22 +301,43 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         [8] - content
         [10]- key
          */
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String order = prefs.getString(mContext.getString(R.string.pref_sort_key),
+                mContext.getString(R.string.pref_sort_default));
         ContentValues[] values = new ContentValues[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            values[i] = new ContentValues(11);
-            values[i].put(PopularEntry.COLUMN_FAVORITE_KEY, -1);
-            values[i].put(PopularEntry.COLUMN_MOVIE_ID, strings[i][0]);
-            values[i].put(PopularEntry.COLUMN_ORIGINAL_TITLE, strings[i][1]);
-            values[i].put(PopularEntry.COLUMN_OVERVIEW, strings[i][2]);
-            values[i].put(PopularEntry.COLUMN_VOTE_AVERAGE, strings[i][3]);
-            values[i].put(PopularEntry.COLUMN_STATUS, strings[i][4]);
-            values[i].put(PopularEntry.COLUMN_POSTER_PATH, strings[i][5]);
-            values[i].put(PopularEntry.COLUMN_NUMBER_OF_REVIEWS, strings[i][6]);
-            values[i].put(PopularEntry.COLUMN_AUTHORS, strings[i][7]);
-            values[i].put(PopularEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
-            values[i].put(PopularEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
+        if(order.equals("popularity.desc")) {
+            for (int i = 0; i < strings.length; i++) {
+                values[i] = new ContentValues(11);
+                values[i].put(PopularEntry.COLUMN_FAVORITE_KEY, -1);
+                values[i].put(PopularEntry.COLUMN_MOVIE_ID, strings[i][0]);
+                values[i].put(PopularEntry.COLUMN_ORIGINAL_TITLE, strings[i][1]);
+                values[i].put(PopularEntry.COLUMN_OVERVIEW, strings[i][2]);
+                values[i].put(PopularEntry.COLUMN_VOTE_AVERAGE, strings[i][3]);
+                values[i].put(PopularEntry.COLUMN_STATUS, strings[i][4]);
+                values[i].put(PopularEntry.COLUMN_POSTER_PATH, strings[i][5]);
+                values[i].put(PopularEntry.COLUMN_NUMBER_OF_REVIEWS, strings[i][6]);
+                values[i].put(PopularEntry.COLUMN_AUTHORS, strings[i][7]);
+                values[i].put(PopularEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
+                values[i].put(PopularEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
+            }
+            mContext.getContentResolver().bulkInsert(PopularEntry.CONTENT_URI, values);
+        }else if (order.equals("vote_average.desc")){
+            for (int i = 0; i < strings.length; i++) {
+                values[i] = new ContentValues(11);
+                values[i].put(HighestRatedEntry.COLUMN_FAVORITE_KEY, -1);
+                values[i].put(HighestRatedEntry.COLUMN_MOVIE_ID, strings[i][0]);
+                values[i].put(HighestRatedEntry.COLUMN_ORIGINAL_TITLE, strings[i][1]);
+                values[i].put(HighestRatedEntry.COLUMN_OVERVIEW, strings[i][2]);
+                values[i].put(HighestRatedEntry.COLUMN_VOTE_AVERAGE, strings[i][3]);
+                values[i].put(HighestRatedEntry.COLUMN_STATUS, strings[i][4]);
+                values[i].put(HighestRatedEntry.COLUMN_POSTER_PATH, strings[i][5]);
+                values[i].put(HighestRatedEntry.COLUMN_NUMBER_OF_REVIEWS, strings[i][6]);
+                values[i].put(HighestRatedEntry.COLUMN_AUTHORS, strings[i][7]);
+                values[i].put(HighestRatedEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
+                values[i].put(HighestRatedEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
+            }
+            mContext.getContentResolver().bulkInsert(HighestRatedEntry.CONTENT_URI, values);
         }
-        mContext.getContentResolver().bulkInsert(PopularEntry.CONTENT_URI, values);
 
         //Log.v("Movie Title", mContext.getContentResolver().q)
     }

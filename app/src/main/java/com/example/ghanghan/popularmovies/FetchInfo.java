@@ -3,9 +3,11 @@ package com.example.ghanghan.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
+import com.example.ghanghan.popularmovies.data.MovieContract.HighestRatedEntry;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -74,8 +77,21 @@ public class FetchInfo {
         //Use database to populate textViews
         String[] idArray = new String[1];
         idArray[0] = movieID;
-        Cursor testCursor = mActivity.getContentResolver().query(PopularEntry.CONTENT_URI,
-                movietext, PopularEntry.COLUMN_MOVIE_ID + " = ?",  idArray, null);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        String order = prefs.getString(mActivity.getString(R.string.pref_sort_key),
+                mActivity.getString(R.string.pref_sort_default));
+        Cursor testCursor;
+        if(order.equals("popularity.desc")) {
+            testCursor = mActivity.getContentResolver().query(PopularEntry.CONTENT_URI,
+                    movietext, PopularEntry.COLUMN_MOVIE_ID + " = ?", idArray, null);
+        }
+        else if (order.equals("vote_average.desc")) {
+            testCursor = mActivity.getContentResolver().query(HighestRatedEntry.CONTENT_URI,
+                    movietext, HighestRatedEntry.COLUMN_MOVIE_ID + " = ?", idArray, null);
+        }
+        else
+            testCursor = null;
 
         TextView title = (TextView) mActivity.findViewById(R.id.movie_title);
         TextView plot = (TextView) mActivity.findViewById(R.id.movie_plot);
