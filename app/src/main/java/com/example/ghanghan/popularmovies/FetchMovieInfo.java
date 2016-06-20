@@ -131,9 +131,9 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 discoverString = buffer.toString();
                 reviewString = bufferReview.toString();
                 trailerString = bufferTrailer.toString();
-                Log.v("data: ", discoverString);
-                Log.v("Data2:", reviewString);
-                Log.v("Data3:", trailerString);
+                //Log.v("data: ", discoverString);
+                //Log.v("Data2:", reviewString);
+                //Log.v("Data3:", trailerString);
 
 
             } catch (MalformedURLException e) {
@@ -159,7 +159,7 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 dataMovie = getMovieData(discoverString);
                 dataReview = getReviewData(reviewString);
                 dataTrailer = getTrailerData(trailerString);
-                Log.v("DataMovie Array", dataMovie[0] + " \n" + dataReview[0] + "\n" + dataTrailer[0]);
+                //Log.v("DataMovie Array", dataMovie[0] + " \n" + dataReview[0] + "\n" + dataTrailer[0]);
                 movieDataArray = concatArrays(dataMovie, dataReview);
                 movieDataArray = concatArrays(movieDataArray, dataTrailer);
                 allMovieData[i] = addElementToArray(strings[i], movieDataArray);
@@ -192,9 +192,9 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         movieResults[2] = movieJson.getString(MTB_RATING);
         movieResults[3] = movieJson.getString(MTB_RELEASE);
         movieResults[4] = movieJson.getString(MTB_THUMBNAIL);
-        Log.v("Got Title", movieResults[0]);
-        Log.v("Got Plot", movieResults[1]);
-        Log.v("Got Rating", movieResults[2]);
+        //Log.v("Got Title", movieResults[0]);
+        //Log.v("Got Plot", movieResults[1]);
+        //Log.v("Got Rating", movieResults[2]);
 
         return movieResults;
 

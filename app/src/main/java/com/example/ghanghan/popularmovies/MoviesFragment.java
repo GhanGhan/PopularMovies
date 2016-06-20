@@ -22,9 +22,9 @@ import com.example.ghanghan.popularmovies.ImageAdapter;
 import com.example.ghanghan.popularmovies.data.MovieContract;
 
 
-public class MoviesFragment extends Fragment implements View.OnClickListener {
+public class MoviesFragment extends Fragment{
+    private static final String LOG_TAG = Fragment.class.getName();
     private ImageAdapter thumbnails;
-
 
     public MoviesFragment() {
         // Required empty public constructor
@@ -33,11 +33,13 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "onCreateView");
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -47,18 +49,6 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
         thumbnails = new ImageAdapter(getActivity());
 
         gridView.setAdapter(thumbnails);
-        //for the database button
-        Button dataButton = (Button)rootView.findViewById(R.id.database_button);
-        dataButton.setOnClickListener(this);
-
-        //TESTING THE DATABASE
-        String[] testArray = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
-        Cursor testCursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.buildPopularUri(10),
-                testArray, null,null, null);
-        if(testCursor.moveToFirst())
-            dataButton.setText(testCursor.getString(0));
-        Log.v("button title", testCursor.getString(0));
-        testCursor.close();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,6 +63,7 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+
         return rootView;
     }
 
@@ -86,24 +77,28 @@ public class MoviesFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        //Start background thread - getting movie data
-        updateMovieData();
+        //TESTING THE DATABASE
+        String[] testArray = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
+        Cursor testCursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.buildPopularUri(10),
+                testArray, null,null, null);
+        if(testCursor.moveToFirst()){//if database (popular) has been updated
+            LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,getActivity().getApplicationContext());
+            loadMoviePoster.loadImages();
+            Log.v(LOG_TAG, "load from db");
+        }
+        else {
+            updateMovieData();//getmovie data from server
+            Log.v(LOG_TAG, "load from server");
+        }
+        testCursor.close();
     }
 
     public void updateMovieData(){
-        FetchThumbnail thumb = new FetchThumbnail(thumbnails);
+        FetchThumbnail thumb = new FetchThumbnail(thumbnails, getActivity().getApplicationContext());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String order = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
         thumb.execute(order);
     }
 
-    //store data specific shit in database
-    @Override
-    public void onClick(View view) {
-        if(view.getId() == R.id.database_button) {
-            FetchMovieInfo movieInfo = new FetchMovieInfo(getActivity().getApplicationContext());
-            movieInfo.execute(thumbnails.getMovieIdArray());
-        }
-    }
 }

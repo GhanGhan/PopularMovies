@@ -66,7 +66,7 @@ public class ThumbnailAdapter extends BaseAdapter {
 
         if(mTrailerImageKey != null) {
             String url = (String)getItem(position);
-            Log.v("In adapter", "The  URL " + getCount());
+            //Log.v("In adapter", "The  URL " + getCount());
             Picasso.with(mContext).load(url).into(imageView);
         }
         return imageView;

@@ -99,7 +99,7 @@ public class DetailsFragment extends Fragment {
         //TODO: use id from bundle instead of intent
         //String url = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
         FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails, mMovieId);
-        MovieData.execute(mMovieId);
+        MovieData.loadView();
     }
 
     public static void expandContent(View view){

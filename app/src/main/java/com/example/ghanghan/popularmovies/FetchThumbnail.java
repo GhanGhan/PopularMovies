@@ -1,5 +1,6 @@
 package com.example.ghanghan.popularmovies;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,8 +23,11 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
     private final String LOG_TAG = FetchThumbnail.class.getSimpleName();
     private ImageAdapter thumbnails;
 
-    public FetchThumbnail(ImageAdapter imageAdapter){
+    Context mContext;
+
+    public FetchThumbnail(ImageAdapter imageAdapter, Context context){
         thumbnails = imageAdapter;
+        mContext = context;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
                     .appendQueryParameter(KEY, BuildConfig.THE_MOVIE_DB_KEY).build();
 
             URL url = new URL(builtUri.toString());
-            Log.v(LOG_TAG, "Built URI" + builtUri.toString());
+            //Log.v(LOG_TAG, "Built URI" + builtUri.toString());
 
             //Create request for TheMovieDataBase and open connection
             urlConnection = (HttpURLConnection)url.openConnection();
@@ -114,7 +118,7 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         final String MTP_POSTER = "poster_path";
         String poster;
         int idInt;
-        Log.v(LOG_TAG, movieSt);
+        //Log.v(LOG_TAG, movieSt);
         JSONObject movieJson = new JSONObject(movieSt);
         JSONArray movieArray = movieJson.getJSONArray(MTB_RESULTS);
         String[][] results = new String[2][movieArray.length()];
@@ -143,16 +147,16 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         for(int i = 0; i < strings[1].length; i++){
             posterUrl[i] = "http://image.tmdb.org/t/p/w500/" + strings[1][i];
             movieID[i] = strings[0][i];
-            Log.v(LOG_TAG, "The Poster URL " + posterUrl[i]);
-            Log.v(LOG_TAG, "The Movie ID " + movieID[i]);
+            //Log.v(LOG_TAG, "The Poster URL " + posterUrl[i]);
+            //Log.v(LOG_TAG, "The Movie ID " + movieID[i]);
         }
         //store poster url array inside Image adapter
-        Log.v(LOG_TAG, "Now in adapter");
+        //Log.v(LOG_TAG, "Now in adapter");
         thumbnails.setThumbIds(posterUrl);
         thumbnails.setMovieID(movieID);
         thumbnails.notifyDataSetChanged();
-        //FetchMovieInfo movieInfo = new FetchMovieInfo();
-        //movieInfo.execute(thumbnails.getMovieIdArray());
+        FetchMovieInfo movieInfo = new FetchMovieInfo(mContext);
+        movieInfo.execute(thumbnails.getMovieIdArray());
 
     }
 

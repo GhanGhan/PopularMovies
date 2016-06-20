@@ -11,8 +11,9 @@ import android.view.View;
 
 public class MainActivity extends ActionBarActivity implements  MoviesFragment.Callback{
 
-    private final String DETAILFRAGMENT_TAG = "DFtag";
+    private static final String DETAILFRAGMENT_TAG = "DFtag";
     private boolean mTwoPane;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +25,8 @@ public class MainActivity extends ActionBarActivity implements  MoviesFragment.C
 
             if(savedInstanceState == null){
                 getSupportFragmentManager().beginTransaction().
-                        replace(R.id.movie_detail_container, new DetailsFragment(), DETAILFRAGMENT_TAG);
+                        replace(R.id.movie_detail_container, new DetailsFragment(), DETAILFRAGMENT_TAG).
+                        commit();
             }
 
         }
@@ -83,4 +85,6 @@ public class MainActivity extends ActionBarActivity implements  MoviesFragment.C
     public void expandContent(View v) {
         DetailsFragment.expandContent(v);// will expand the view containing the reviews
     }
+
+
 }
