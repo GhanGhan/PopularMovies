@@ -182,8 +182,8 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         movieInfo.execute(thumbnails.getMovieIdArray());
         //DO NOT DELETE THIS FOR LOOP
         //****Forces app to keep strong reference to poster paths
-        for(int i = 0; i < mTarget.length; i++)
-            Log.v(LOG_TAG, "Target - " + mTarget[i].toString());
+        //for(int i = 0; i < mTarget.length; i++)
+        //    Log.v(LOG_TAG, "Target - " + mTarget[i].toString());
 
     }
 
@@ -198,16 +198,47 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
 
             //File posterPath = new File(mDirectory, posterKey[i]);//path to poster
             //String posterServerPath = "http://image.tmdb.org/t/p/w500/" + posterKey[i];
-            //synchronized (thumbnails.getPosterPath(i)) {
+            //synchronized (mTarget) {
                 Log.v(LOG_TAG, "place image in folder");
-                Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
+                //Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
+            ToFile downloadImage1 = new ToFile(thumbnails.getPosterPath(i), (String)thumbnails.getItem(i), mContext);
+            (new Thread(downloadImage1)).start();
             //}
             Log.v("FDir", mDirectory.getAbsolutePath());
             Log.v("FDir poster", thumbnails.getPosterPath(i).getAbsolutePath());
             Log.v("FDir server", (String)thumbnails.getItem(i));
+
         }
 
 
+    }
+
+    public class ToFile implements Runnable{
+        File filePath;
+        String link;
+        Context mContext;
+
+        public ToFile(File file, String url, Context context){
+            filePath = file;
+            link = url;
+            mContext = context;
+        }
+        @Override
+        public void run() {
+            FileOutputStream outputStream = null;
+            Bitmap image = null;
+            try {
+                image = Picasso.with(mContext).load(link).get();
+                //place bitmaps in myPath_ location
+                Log.v("To File Thread", "place image in folder");
+
+                outputStream = new FileOutputStream(filePath);
+                image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                outputStream.close();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public class FileTarget implements Target {
@@ -243,6 +274,5 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
 
         }
     }
-
 
 }
