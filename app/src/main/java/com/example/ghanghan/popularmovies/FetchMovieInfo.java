@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +27,7 @@ import java.net.URL;
  * Created by GhanGhan on 6/14/2016.
  */
 public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
-
+    private static final String LOG_TAG = FetchMovieInfo.class.getName();
     Context mContext;
     public FetchMovieInfo(Context context){
         mContext = context;
@@ -80,13 +81,29 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
 
                 URL urlTrailer = new URL(builtUriTrailer.toString());
 
+                if(i == (numberOfMovies/2)) {//due to 40 request limit
+                    try {
+                        Log.v(LOG_TAG, "sleep");
+                        Thread.sleep(10000, 1);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+
                 //create request for TheMovieDataBase and open connection for general data
                 urlConnection = (HttpURLConnection) urlGeneral.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
+
                 //Read input stream into String
-                InputStream inputStream = urlConnection.getInputStream();
+                InputStream inputStream = null;
+                try {
+                    inputStream = urlConnection.getInputStream();
+                }catch(FileNotFoundException e){
+                    inputStream = urlConnection.getErrorStream();
+                    e.printStackTrace();
+                }
                 StringBuffer buffer = new StringBuffer();
 
                 //create request for TheMovieDataBase and open connection for Review data
@@ -95,7 +112,13 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 urlConnection.connect();
 
                 //Read input stream into String for Review
-                InputStream inputStreamReview = urlConnection.getInputStream();
+                InputStream inputStreamReview;
+                try {
+                    inputStreamReview = urlConnection.getInputStream();
+                }catch(FileNotFoundException e){
+                    inputStreamReview = urlConnection.getErrorStream();
+                    e.printStackTrace();
+                }
                 StringBuffer bufferReview = new StringBuffer();
 
                 //create request for TheMovieDataBase and open connection for Trailer data
@@ -104,7 +127,13 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 urlConnection.connect();
 
                 //Read input stream into String for Trailer
-                InputStream inputStreamTrailer = urlConnection.getInputStream();
+                InputStream inputStreamTrailer;
+                try {
+                    inputStreamTrailer = urlConnection.getInputStream();
+                }catch(FileNotFoundException e){
+                    inputStreamTrailer = urlConnection.getErrorStream();
+                    e.printStackTrace();
+                }
                 StringBuffer bufferTrailer = new StringBuffer();
 
                 if (inputStream == null)
@@ -133,9 +162,9 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 discoverString = buffer.toString();
                 reviewString = bufferReview.toString();
                 trailerString = bufferTrailer.toString();
-                //Log.v("data: ", discoverString);
-                //Log.v("Data2:", reviewString);
-                //Log.v("Data3:", trailerString);
+                Log.v("data: ", discoverString);
+                Log.v("Data2:", reviewString);
+                Log.v("Data3:", trailerString);
 
 
             } catch (MalformedURLException e) {

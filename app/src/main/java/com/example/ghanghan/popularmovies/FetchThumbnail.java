@@ -1,15 +1,23 @@
 package com.example.ghanghan.popularmovies;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,8 +30,10 @@ import java.net.URL;
 public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
     private final String LOG_TAG = FetchThumbnail.class.getSimpleName();
     private ImageAdapter thumbnails;
-
-    Context mContext;
+    private Context mContext;
+    private ContextWrapper mWrapper;
+    public File mDirectory;
+    private FileTarget[] mTarget;
 
     public FetchThumbnail(ImageAdapter imageAdapter, Context context){
         thumbnails = imageAdapter;
@@ -142,11 +152,20 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
     protected void onPostExecute(String[][] strings) {
         //movie poster file path
         String[] posterUrl = new String[strings[1].length];
+        String[] posterKey = new String[strings[1].length];
         String[] movieID = new String[strings[1].length];
+        File[] posterFilePath = new File[strings[1].length];
         //constructing movie poster url
+        mWrapper = new ContextWrapper(mContext.getApplicationContext());
         for(int i = 0; i < strings[1].length; i++){
             posterUrl[i] = "http://image.tmdb.org/t/p/w500/" + strings[1][i];
             movieID[i] = strings[0][i];
+            posterKey[i] = strings[1][i];
+
+            String filename = movieID[i];// name of the folder that will hold the images
+            //Folder to hold images
+            mDirectory = mWrapper.getDir(filename, Context.MODE_PRIVATE);//path to the folder
+            posterFilePath[i] = new File(mDirectory, posterKey[i]);//path to poster
             //Log.v(LOG_TAG, "The Poster URL " + posterUrl[i]);
             //Log.v(LOG_TAG, "The Movie ID " + movieID[i]);
         }
@@ -154,12 +173,76 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         //Log.v(LOG_TAG, "Now in adapter");
         thumbnails.setThumbIds(posterUrl);
         thumbnails.setMovieID(movieID);
+        thumbnails.setPosterKeys(posterKey);
+        thumbnails.setPosterPaths(posterFilePath);
+        placePosterInFolder(posterKey);
         thumbnails.notifyDataSetChanged();
+
         FetchMovieInfo movieInfo = new FetchMovieInfo(mContext);
         movieInfo.execute(thumbnails.getMovieIdArray());
+        //DO NOT DELETE THIS FOR LOOP
+        //****Forces app to keep strong reference to poster paths
+        for(int i = 0; i < mTarget.length; i++)
+            Log.v(LOG_TAG, "Target - " + mTarget[i].toString());
 
     }
 
+    private void placePosterInFolder(String[] posterKey){
+        mWrapper = new ContextWrapper(mContext.getApplicationContext());
+        String filename;// name of the folder that will hold the images
+        //Folder to hold images
+        mTarget = new FileTarget[posterKey.length];
+
+        for(int i = 0; i < posterKey.length; i++){
+            mTarget[i] = new FileTarget(thumbnails.getPosterPath(i));
+
+            //File posterPath = new File(mDirectory, posterKey[i]);//path to poster
+            //String posterServerPath = "http://image.tmdb.org/t/p/w500/" + posterKey[i];
+            //synchronized (thumbnails.getPosterPath(i)) {
+                Log.v(LOG_TAG, "place image in folder");
+                Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
+            //}
+            Log.v("FDir", mDirectory.getAbsolutePath());
+            Log.v("FDir poster", thumbnails.getPosterPath(i).getAbsolutePath());
+            Log.v("FDir server", (String)thumbnails.getItem(i));
+        }
+
+
+    }
+
+    public class FileTarget implements Target {
+        private final String LOG_TAG = FileTarget.class.getName();
+
+        private File filePath;
+
+        public FileTarget(File path){
+            filePath = path;
+        }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            FileOutputStream outputStream = null;
+            try{
+                //place bitmaps in myPath_ location
+                Log.v(LOG_TAG, filePath.toString() + "dl bitmap");
+                outputStream = new FileOutputStream(filePath);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                outputStream.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.ghanghan.popularmovies;
 
 //import android.support.v7.app.AppCompatActivity;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -9,10 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
+
 public class MainActivity extends ActionBarActivity implements  MoviesFragment.Callback{
 
     private static final String DETAILFRAGMENT_TAG = "DFtag";
     private boolean mTwoPane;
+
 
 
     @Override
