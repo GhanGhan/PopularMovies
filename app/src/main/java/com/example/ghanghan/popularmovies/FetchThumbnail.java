@@ -33,7 +33,6 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
     private Context mContext;
     private ContextWrapper mWrapper;
     public File mDirectory;
-    private FileTarget[] mTarget;
 
     public FetchThumbnail(ImageAdapter imageAdapter, Context context){
         thumbnails = imageAdapter;
@@ -203,68 +202,6 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         }
 
 
-    }
-
-    public class ToFile implements Runnable{
-        File filePath;
-        String link;
-        Context mContext;
-
-        public ToFile(File file, String url, Context context){
-            filePath = file;
-            link = url;
-            mContext = context;
-        }
-        @Override
-        public void run() {
-            FileOutputStream outputStream = null;
-            Bitmap image = null;
-            try {
-                image = Picasso.with(mContext).load(link).get();
-                //place bitmaps in myPath_ location
-                Log.v("To File Thread", "place image in folder");
-
-                outputStream = new FileOutputStream(filePath);
-                image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                outputStream.close();
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public class FileTarget implements Target {
-        private final String LOG_TAG = FileTarget.class.getName();
-
-        private File filePath;
-
-        public FileTarget(File path){
-            filePath = path;
-        }
-
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            FileOutputStream outputStream = null;
-            try{
-                //place bitmaps in myPath_ location
-                Log.v(LOG_TAG, filePath.toString() + "dl bitmap");
-                outputStream = new FileOutputStream(filePath);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                outputStream.close();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
     }
 
 }
