@@ -2,6 +2,7 @@ package com.example.ghanghan.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -24,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -101,6 +103,10 @@ public class FetchInfo {
         TextView review_content = (TextView) mActivity.findViewById(R.id.movie_review_content);
         ImageView poster = (ImageView) mActivity.findViewById(R.id.thumbnail);
 
+        ContextWrapper  wrapper = new ContextWrapper(mActivity.getApplicationContext());
+        File directory;
+        File posterPath;
+
         if(testCursor.moveToFirst()){
             title.setText(testCursor.getString(COL_ORIGINAL_TITLE));
             plot.setText(testCursor.getString(COL_OVERVIEW));
@@ -108,8 +114,9 @@ public class FetchInfo {
             release_date.setText(testCursor.getString(COL_STATUS));
             review_tile.setText("Reviews (" + testCursor.getString(COL_NUMBER_OF_REVIEWS) + ")");
             review_content.setText(testCursor.getString(COL_REVIEW_CONTENT));
-            Picasso.with(mActivity).load("http://image.tmdb.org/t/p/w500/" +
-                    testCursor.getString(COL_POSTER_PATH)).into(poster);
+            directory = wrapper.getDir(testCursor.getString(COL_MOVIE_ID), Context.MODE_PRIVATE);//path to the folder
+            posterPath = new File(directory, testCursor.getString(COL_POSTER_PATH));//path to poster
+            Picasso.with(mActivity).load(posterPath).into(poster);
             Log.v("Loaded from database", testCursor.getString(COL_ORIGINAL_TITLE));
             ///For trailer thumbnail
             String thumbKeys = testCursor.getString(COL_TRAILER_KEYS);
