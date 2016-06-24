@@ -189,21 +189,13 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
 
     private void placePosterInFolder(String[] posterKey){
         mWrapper = new ContextWrapper(mContext.getApplicationContext());
-        String filename;// name of the folder that will hold the images
-        //Folder to hold images
-        mTarget = new FileTarget[posterKey.length];
 
         for(int i = 0; i < posterKey.length; i++){
-            mTarget[i] = new FileTarget(thumbnails.getPosterPath(i));
-
-            //File posterPath = new File(mDirectory, posterKey[i]);//path to poster
-            //String posterServerPath = "http://image.tmdb.org/t/p/w500/" + posterKey[i];
-            //synchronized (mTarget) {
-                Log.v(LOG_TAG, "place image in folder");
-                //Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
+            Log.v(LOG_TAG, "place image in folder");
+            //Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
             ToFile downloadImage1 = new ToFile(thumbnails.getPosterPath(i), (String)thumbnails.getItem(i), mContext);
             (new Thread(downloadImage1)).start();
-            //}
+
             Log.v("FDir", mDirectory.getAbsolutePath());
             Log.v("FDir poster", thumbnails.getPosterPath(i).getAbsolutePath());
             Log.v("FDir server", (String)thumbnails.getItem(i));

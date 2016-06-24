@@ -10,7 +10,11 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Created by GhanGhan on 6/14/2016.
@@ -94,8 +98,14 @@ public class ImageAdapter extends BaseAdapter {
         } else
             imageView = (ImageView) convertView;
 
-        if(mThumbIds != null) {
+        if(mPosterPaths != null) {
             String url = (String)getItem(position);
+
+
+            while(getPosterPath(position).length() == 0){//loop until image is in file location
+                Log.v("ImageAdapter", "file is empty");
+            }
+
 
             //Picasso.with(mContext).load(url).into(imageView); //from server
             Picasso.with(mContext).load(getPosterPath(position)).into(imageView);
