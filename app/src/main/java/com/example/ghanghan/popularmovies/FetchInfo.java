@@ -122,7 +122,7 @@ public class FetchInfo {
             String thumbKeys = testCursor.getString(COL_TRAILER_KEYS);
             //String trailerDes = strings[strings.length-2];
             if(thumbKeys != null) {
-                parseTrailerKeys(thumbKeys);
+                parseTrailerKeys(thumbKeys, testCursor.getString(COL_MOVIE_ID));
                 LinearLayout trailerLayout = (LinearLayout)mActivity.findViewById(R.id.trailer_horizontal_list);
                 initiateTrailerViews(trailerLayout);
 
@@ -132,34 +132,37 @@ public class FetchInfo {
         }
 
     }
-    private void parseTrailerKeys(String thumbKeys) {
+    private void parseTrailerKeys(String thumbKeys, String filename) {
         //Log.v("Trailer Description", trailerDes);
         //Log.v("Null description", trailerDes.substring(0, 4));
         if (thumbKeys != null) {
-            thumbKeys = thumbKeys.substring(4);
+            if(thumbKeys.substring(0,4).equals("null"))
+                thumbKeys = thumbKeys.substring(4);
         }
         //Log.v("Trailer Description", trailerDes);
+        ContextWrapper wrapper = new ContextWrapper(mActivity.getApplicationContext());
+        File directory = wrapper.getDir(filename, Context.MODE_PRIVATE);
+        File trailerPath[];
 
         StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
         int number = parseKeys.countTokens();
-        String thumbUrl[] = new String[number];
         String keyUrl[] = new String[number];
-        String urlKey = null;
+        trailerPath = new File[number];
+        String urlKey;
         //constructing movie poster url
 
         for (int i = 0; i < number; i++) {
             urlKey = parseKeys.nextToken();
-            thumbUrl[i] = "http://img.youtube.com/vi/" + urlKey + "/0.jpg";
+            trailerPath[i] = new File(directory, urlKey);//path to poster
+            Log.v("Loading trailer image", trailerPath[i].toString());
             keyUrl[i] = urlKey;
             //Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
-
         }
         //store poster url array inside Image adapter
         Log.v("Post Ex", "Now in adapter");
 
-        mThumbnailAdapter.setTrailerImageKey(thumbUrl);
+        mThumbnailAdapter.setTrailerImageKey(trailerPath);
         mThumbnailAdapter.setTrailerId(keyUrl);
-
         mThumbnailAdapter.notifyDataSetChanged();
     }
 

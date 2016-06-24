@@ -4,6 +4,7 @@ import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
 import com.example.ghanghan.popularmovies.data.MovieContract.HighestRatedEntry;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.StringTokenizer;
 
 /**
  * Created by GhanGhan on 6/14/2016.
@@ -348,6 +351,7 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 values[i].put(PopularEntry.COLUMN_AUTHORS, strings[i][7]);
                 values[i].put(PopularEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
                 values[i].put(PopularEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
+                if(strings[i][10] != null)downloadTrailerThumbnails(strings[i][10],strings[i][0]);
             }
             mContext.getContentResolver().bulkInsert(PopularEntry.CONTENT_URI, values);
         }else if (order.equals("vote_average.desc")){
@@ -364,11 +368,51 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 values[i].put(HighestRatedEntry.COLUMN_AUTHORS, strings[i][7]);
                 values[i].put(HighestRatedEntry.COLUMN_REVIEW_CONTENT, strings[i][8]);
                 values[i].put(HighestRatedEntry.COLUMN_TRAILER_KEYS, strings[i][10]);
+                if(strings[i][10] != null)downloadTrailerThumbnails(strings[i][10],strings[i][0]);
             }
             mContext.getContentResolver().bulkInsert(HighestRatedEntry.CONTENT_URI, values);
         }
 
         //Log.v("Movie Title", mContext.getContentResolver().q)
+    }// end PoseExcecute
+
+    public void downloadTrailerThumbnails(String trailerKeys, String filename){
+        String[] separateKeys = parseTrailerKeys(trailerKeys, filename );
+        ContextWrapper wrapper = new ContextWrapper(mContext.getApplicationContext());
+        File directory = wrapper.getDir(filename, Context.MODE_PRIVATE);
+        File trailerPath;
+
+        for(int i = 0; i < separateKeys.length; i++){
+            trailerPath = new File(directory, separateKeys[i]);//path to poster
+            Log.v("FetchMovieInfo", "get trailer thumbnails");
+            Log.v("FetchMovieInfo", trailerPath.toString());
+            ToFile downloadImage1 = new ToFile(trailerPath, "http://img.youtube.com/vi/" + separateKeys[i] + "/0.jpg", mContext);
+            (new Thread(downloadImage1)).start();
+        }
+
+    }
+
+    private String[] parseTrailerKeys(String thumbKeys, String filename) {
+        //Log.v("Trailer Description", trailerDes);
+        //Log.v("Null description", trailerDes.substring(0, 4));
+        if (thumbKeys != null) {
+            thumbKeys = thumbKeys.substring(4);
+        }
+        //Log.v("Trailer Description", trailerDes);
+
+        StringTokenizer parseKeys = new StringTokenizer(thumbKeys, ",");
+        int number = parseKeys.countTokens();
+        String keyUrl[] = new String[number];
+        String urlKey = null;
+        //constructing movie poster url
+
+        for (int i = 0; i < number; i++) {
+            urlKey = parseKeys.nextToken();
+            keyUrl[i] = urlKey;
+            //Log.v("Post Ex", "The trailer URL " + thumbUrl[i]);
+
+        }
+        return keyUrl;
     }
 
 

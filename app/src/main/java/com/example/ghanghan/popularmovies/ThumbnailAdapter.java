@@ -9,13 +9,15 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+
 /**
  * Created by GhanGhan on 6/14/2016.
  */
 public class ThumbnailAdapter extends BaseAdapter {
     private Context mContext;
     //will get from server
-    private String[] mTrailerImageKey = null;
+    private File[] mTrailerImageKey = null;
     private String[] mTrailerId = null;
 
 
@@ -45,7 +47,7 @@ public class ThumbnailAdapter extends BaseAdapter {
         return 0;
     }
 
-    public void setTrailerImageKey( String[] keys){
+    public void setTrailerImageKey(File[] keys){
         mTrailerImageKey = keys;
     }
 
@@ -65,7 +67,7 @@ public class ThumbnailAdapter extends BaseAdapter {
 
 
         if(mTrailerImageKey != null) {
-            String url = (String)getItem(position);
+            File url = (File)getItem(position);
             //Log.v("In adapter", "The  URL " + getCount());
             Picasso.with(mContext).load(url).into(imageView);
         }
