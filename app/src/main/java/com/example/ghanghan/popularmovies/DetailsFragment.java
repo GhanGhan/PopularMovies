@@ -1,10 +1,13 @@
 package com.example.ghanghan.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.content.Intent;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -21,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.ghanghan.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -72,8 +77,49 @@ public class DetailsFragment extends Fragment {
 
         if(arguments != null)
             mMovieId = arguments.getString(MOVIE_ID);
-
+        String[] projection = {MovieContract.PopularEntry.COLUMN_FAVORITE_KEY};
+        String[] selectionArgs = {mMovieId};
+        //Set color of the button
+        Button favouritesButton = (Button)rootView.findViewById(R.id.favourite_button);
+        changeButtonColor(favouritesButton);
         return rootView;
+    }
+
+    public void changeButtonColor(Button favButton){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String order = prefs.getString(getActivity().getString(R.string.pref_sort_key),
+                getActivity().getString(R.string.pref_sort_default));
+        String[] selectionArgs = {mMovieId};
+        String[] projection = {MovieContract.PopularEntry.COLUMN_FAVORITE_KEY};
+        String[] projectionHigh = {MovieContract.HighestRatedEntry.COLUMN_FAVORITE_KEY};
+        if(order.equals("popularity.desc")){
+            Cursor cursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.CONTENT_URI,
+                    projection, MovieContract.PopularEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs,
+                    null);
+            if(cursor.moveToFirst()){
+                Log.v("Details onCreateView", "is favourtite?");
+                int fav = cursor.getInt(0);
+                if(fav == -1)
+                    favButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                else
+                    favButton.setBackgroundColor(getResources().getColor(R.color.selected));
+            }
+        }
+        else if (order.equals("vote_average.desc")){
+
+            Cursor cursor = getActivity().getContentResolver().query(MovieContract.HighestRatedEntry.CONTENT_URI,
+                    projectionHigh, MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs,
+                    null);
+            if(cursor.moveToFirst()){
+                Log.v("Details onCreateView", "is favourtite?");
+                int fav = cursor.getInt(0);
+                if(fav == -1)
+                    favButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                else
+                    favButton.setBackgroundColor(getResources().getColor(R.color.selected));
+            }
+        }
+
     }
 
 
