@@ -73,6 +73,20 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 MovieContract.PopularEntry.COLUMN_REVIEW_CONTENT
     };
 
+    private static final String[] HIGH_RATE_COLUMNS = {
+            MovieContract.HighestRatedEntry.COLUMN_FAVORITE_KEY,
+            MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID,
+            MovieContract.HighestRatedEntry.COLUMN_POSTER_PATH,
+            MovieContract.HighestRatedEntry.COLUMN_ORIGINAL_TITLE,
+            MovieContract.HighestRatedEntry.COLUMN_STATUS,
+            MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.HighestRatedEntry.COLUMN_TRAILER_KEYS,
+            MovieContract.HighestRatedEntry.COLUMN_OVERVIEW,
+            MovieContract.HighestRatedEntry.COLUMN_NUMBER_OF_REVIEWS,
+            MovieContract.HighestRatedEntry.COLUMN_AUTHORS,
+            MovieContract.HighestRatedEntry.COLUMN_REVIEW_CONTENT
+    };
+
     private static final int COL_FAVORITE_KEY = 0;
     private static final int COL_MOVIE_ID = 1;
     private static final int COL_POSTER_PATH = 2;
@@ -161,8 +175,9 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
     public void changeFavoriteState(){
         Log.v("DetailFrag", "buttonClicked");
         String[] selectionArgs = {mMovieId};
+        Cursor cursor;
         if(mTable.equals("popularity.desc")){
-            Cursor cursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.CONTENT_URI,
+            cursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.CONTENT_URI,
                     POPULAR_COLUMNS, MovieContract.PopularEntry.COLUMN_MOVIE_ID + " = ?",
                     selectionArgs, null );
             if(cursor.moveToFirst()){
@@ -173,7 +188,6 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
                 }
                 else{
-
                     int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
                             MovieContract.FavoritedEntry._ID + " = ?", new String[] {Integer.toString(favId)});
                     favId = -1;
@@ -183,6 +197,27 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 }
             }
             cursor.close();
+        }
+        else if(mTable.equals("vote_average.desc")){
+            cursor = getActivity().getContentResolver().query(MovieContract.HighestRatedEntry.CONTENT_URI,
+                    HIGH_RATE_COLUMNS, MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID + " = ?",
+                    selectionArgs, null);
+            if(cursor.moveToFirst()){
+                int favId = cursor.getInt(COL_FAVORITE_KEY);
+                if(favId == -1){
+                    favId = addToFavoritesTable(cursor);
+                    updateHighTable(favId, selectionArgs);
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                }
+                else{
+                    int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
+                            MovieContract.FavoritedEntry._ID + " = ?", new String[] {Integer.toString(favId)});
+                    favId = -1;
+                    updateHighTable(favId, selectionArgs);
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    Log.v("Fav rows deleted", Integer.toString(rowsD));
+                }
+            }
         }
 
     }
@@ -229,6 +264,14 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
         Log.v("Pop Table, rows updated", ""+ numRowsUpdated);
     }
 
+    private void updateHighTable(int favId, String[] selectionArgs){
+        ContentValues value = new ContentValues(1);
+        value.put(MovieContract.HighestRatedEntry.COLUMN_FAVORITE_KEY, favId);
+        int numRowsUpdated;
+        numRowsUpdated = getActivity().getContentResolver().update(MovieContract.HighestRatedEntry.CONTENT_URI,
+                value, MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs);
+        Log.v("High Table,rows updated", ""+ numRowsUpdated);
+    }
 
     /**
      * This interface must be implemented by activities that contain this
