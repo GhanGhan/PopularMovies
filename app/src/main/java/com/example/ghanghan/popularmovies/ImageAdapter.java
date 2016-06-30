@@ -85,10 +85,10 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         //GETTING FROM FILE SYSTEM
         ContextWrapper wrapper = new ContextWrapper(mContext.getApplicationContext());
-        File directory = wrapper.getDir(getMovieID(position), Context.MODE_PRIVATE);//path to the folder
+        /*File directory = wrapper.getDir(getMovieID(position), Context.MODE_PRIVATE);//path to the folder
         File posterPath = new File(directory.getAbsolutePath(), mPosterKey[position]);//path to poster
         Log.v("Directory", directory.getAbsolutePath());
-        Log.v("posterPath", posterPath.getAbsolutePath());
+        Log.v("posterPath", posterPath.getAbsolutePath());*/
         ///////////////////////////////////////////
         ImageView imageView;
         if (convertView == null) {
@@ -101,7 +101,7 @@ public class ImageAdapter extends BaseAdapter {
         if(mPosterPaths != null) {
             String url = (String)getItem(position);
 
-
+            Log.v("Adap Positon",""+ position );
             while(getPosterPath(position).length() == 0){//loop until image is in file location
                 Log.v("ImageAdapter", "file is empty");
             }

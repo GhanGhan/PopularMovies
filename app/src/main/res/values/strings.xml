@@ -18,11 +18,13 @@
     <string-array name="pref_sort_titles">
         <item>Popularity</item>
         <item>Rating</item>
+        <item>Favorites</item>
     </string-array>
 
     <string-array name="pref_sort_values">
         <item>popularity.desc</item>
         <item>vote_average.desc</item>
+        <item>favorites</item>
     </string-array>
     <string name="title_activity_details">DetailsActivity</string>
 

@@ -126,6 +126,18 @@ public class MoviesFragment extends Fragment{
             }
             testCursor.close();
         }
+        else if(order.equals("favorites")){
+            String[] testArrayFavorite = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
+            Cursor testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.FavoritedEntry.CONTENT_URI,
+                            testArrayFavorite, null, null, null);
+            if(testCursor.moveToFirst()){
+                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
+                        getActivity().getApplicationContext(), order);
+                loadMoviePoster.loadImages();
+                Log.v(LOG_TAG, "load from fav Table");
+            }
+        }
     }
 
 }

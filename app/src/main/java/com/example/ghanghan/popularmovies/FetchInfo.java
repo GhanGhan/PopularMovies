@@ -16,8 +16,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.ghanghan.popularmovies.data.MovieContract;
 import com.example.ghanghan.popularmovies.data.MovieContract.PopularEntry;
 import com.example.ghanghan.popularmovies.data.MovieContract.HighestRatedEntry;
+import com.example.ghanghan.popularmovies.data.MovieContract.FavoritedEntry;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -91,6 +93,10 @@ public class FetchInfo {
         else if (order.equals("vote_average.desc")) {
             testCursor = mActivity.getContentResolver().query(HighestRatedEntry.CONTENT_URI,
                     movietext, HighestRatedEntry.COLUMN_MOVIE_ID + " = ?", idArray, null);
+        }
+        else if (order.equals("favorites")) {
+            testCursor = mActivity.getContentResolver().query(FavoritedEntry.CONTENT_URI,
+                    movietext, FavoritedEntry.COLUMN_MOVIE_ID + " = ?", idArray, null);
         }
         else
             testCursor = null;
