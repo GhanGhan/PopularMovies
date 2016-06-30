@@ -1,5 +1,6 @@
 package com.example.ghanghan.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -50,11 +51,39 @@ import java.util.StringTokenizer;
  * to handle interaction events.
 
  */
-public class DetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment implements View.OnClickListener {
     private static boolean expand = false;
     private ThumbnailAdapter thumbnails;
     static final String MOVIE_ID = "movie_ID";
     private String mMovieId;
+    private String mTable;
+    private Button mFavButton;
+
+    private static final String[] POPULAR_COLUMNS = {
+        MovieContract.PopularEntry.COLUMN_FAVORITE_KEY,
+                MovieContract.PopularEntry.COLUMN_MOVIE_ID,
+                MovieContract.PopularEntry.COLUMN_POSTER_PATH,
+                MovieContract.PopularEntry.COLUMN_ORIGINAL_TITLE,
+                MovieContract.PopularEntry.COLUMN_STATUS,
+                MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE,
+                MovieContract.PopularEntry.COLUMN_TRAILER_KEYS,
+                MovieContract.PopularEntry.COLUMN_OVERVIEW,
+                MovieContract.PopularEntry.COLUMN_NUMBER_OF_REVIEWS,
+                MovieContract.PopularEntry.COLUMN_AUTHORS,
+                MovieContract.PopularEntry.COLUMN_REVIEW_CONTENT
+    };
+
+    private static final int COL_FAVORITE_KEY = 0;
+    private static final int COL_MOVIE_ID = 1;
+    private static final int COL_POSTER_PATH = 2;
+    private static final int COL_ORIGINAL_TITLE = 3;
+    private static final int COL_STATUS = 4;
+    private static final int COL_VOTE_AVERAGE = 5;
+    private static final int COL_TRAILER_KEYS = 6;
+    private static final int COL_OVERVIEW = 7;
+    private static final int COL_NUMBER_OF_REVIEWS = 8;
+    private static final int COL_AUTHORS = 9;
+    private static final int COL_REVIEW_CONTENT = 10;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -77,22 +106,22 @@ public class DetailsFragment extends Fragment {
 
         if(arguments != null)
             mMovieId = arguments.getString(MOVIE_ID);
-        String[] projection = {MovieContract.PopularEntry.COLUMN_FAVORITE_KEY};
-        String[] selectionArgs = {mMovieId};
+        //get table
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mTable = prefs.getString(getActivity().getString(R.string.pref_sort_key),
+                getActivity().getString(R.string.pref_sort_default));
         //Set color of the button
-        Button favouritesButton = (Button)rootView.findViewById(R.id.favourite_button);
-        changeButtonColor(favouritesButton);
+        mFavButton = (Button)rootView.findViewById(R.id.favourite_button);
+        changeButtonColor();
+        mFavButton.setOnClickListener(this);
         return rootView;
     }
 
-    public void changeButtonColor(Button favButton){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String order = prefs.getString(getActivity().getString(R.string.pref_sort_key),
-                getActivity().getString(R.string.pref_sort_default));
+    public void changeButtonColor(){
         String[] selectionArgs = {mMovieId};
         String[] projection = {MovieContract.PopularEntry.COLUMN_FAVORITE_KEY};
         String[] projectionHigh = {MovieContract.HighestRatedEntry.COLUMN_FAVORITE_KEY};
-        if(order.equals("popularity.desc")){
+        if(mTable.equals("popularity.desc")){
             Cursor cursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.CONTENT_URI,
                     projection, MovieContract.PopularEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs,
                     null);
@@ -100,12 +129,12 @@ public class DetailsFragment extends Fragment {
                 Log.v("Details onCreateView", "is favourtite?");
                 int fav = cursor.getInt(0);
                 if(fav == -1)
-                    favButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
                 else
-                    favButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
             }
         }
-        else if (order.equals("vote_average.desc")){
+        else if (mTable.equals("vote_average.desc")){
 
             Cursor cursor = getActivity().getContentResolver().query(MovieContract.HighestRatedEntry.CONTENT_URI,
                     projectionHigh, MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs,
@@ -114,12 +143,90 @@ public class DetailsFragment extends Fragment {
                 Log.v("Details onCreateView", "is favourtite?");
                 int fav = cursor.getInt(0);
                 if(fav == -1)
-                    favButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
                 else
-                    favButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
             }
         }
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        Log.v("View id", "" + view.getId());
+        Log.v("Button id", "" + R.id.favourite_button);
+        if(view.getId() == R.id.favourite_button) changeFavoriteState();
+    }
+
+    public void changeFavoriteState(){
+        Log.v("DetailFrag", "buttonClicked");
+        String[] selectionArgs = {mMovieId};
+        if(mTable.equals("popularity.desc")){
+            Cursor cursor = getActivity().getContentResolver().query(MovieContract.PopularEntry.CONTENT_URI,
+                    POPULAR_COLUMNS, MovieContract.PopularEntry.COLUMN_MOVIE_ID + " = ?",
+                    selectionArgs, null );
+            if(cursor.moveToFirst()){
+                int favId = cursor.getInt(COL_FAVORITE_KEY);
+                if(favId == -1){
+                    favId = addToFavoritesTable(cursor);
+                    updatePopularTable(favId, selectionArgs);
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                }
+                else{
+
+                    int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
+                            MovieContract.FavoritedEntry._ID + " = ?", new String[] {Integer.toString(favId)});
+                    favId = -1;
+                    updatePopularTable(favId, selectionArgs);
+                    mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    Log.v("Fav rows deleted", Integer.toString(rowsD));
+                }
+            }
+            cursor.close();
+        }
+
+    }
+
+    private int addToFavoritesTable(Cursor cursor){
+        ContentValues values = new ContentValues(10);
+
+        values.put(MovieContract.FavoritedEntry.COLUMN_MOVIE_ID,
+                cursor.getString(COL_MOVIE_ID));
+        values.put(MovieContract.FavoritedEntry.COLUMN_ORIGINAL_TITLE,
+                cursor.getString(COL_ORIGINAL_TITLE));
+        values.put(MovieContract.FavoritedEntry.COLUMN_OVERVIEW,
+                cursor.getString(COL_OVERVIEW));
+        values.put(MovieContract.FavoritedEntry.COLUMN_VOTE_AVERAGE,
+                cursor.getFloat(COL_VOTE_AVERAGE));
+        values.put(MovieContract.FavoritedEntry.COLUMN_STATUS,
+                cursor.getString(COL_STATUS));
+        values.put(MovieContract.FavoritedEntry.COLUMN_POSTER_PATH,
+                cursor.getString(COL_POSTER_PATH));
+        values.put(MovieContract.FavoritedEntry.COLUMN_NUMBER_OF_REVIEWS,
+                cursor.getString(COL_NUMBER_OF_REVIEWS));
+        values.put(MovieContract.FavoritedEntry.COLUMN_AUTHORS,
+                cursor.getString(COL_AUTHORS));
+        values.put(MovieContract.FavoritedEntry.COLUMN_REVIEW_CONTENT,
+                cursor.getString(COL_REVIEW_CONTENT));
+        values.put(MovieContract.FavoritedEntry.COLUMN_TRAILER_KEYS,
+                cursor.getString(COL_TRAILER_KEYS));
+
+        Uri newFav = getActivity().getContentResolver().insert(MovieContract.FavoritedEntry.CONTENT_URI,
+                values);
+        Log.v("Fav Table, uri row", newFav.toString());
+        int rowNumber = Integer.parseInt(MovieContract.FavoritedEntry.getRowId(newFav));
+        Log.v("The row #","" + rowNumber);
+
+        return rowNumber;
+    }
+
+    private void updatePopularTable(int favId, String[] selectionArgs){
+        ContentValues value = new ContentValues(1);
+        value.put(MovieContract.PopularEntry.COLUMN_FAVORITE_KEY, favId);
+        int numRowsUpdated;
+        numRowsUpdated = getActivity().getContentResolver().update(MovieContract.PopularEntry.CONTENT_URI,
+                value, MovieContract.PopularEntry.COLUMN_MOVIE_ID + " = ?", selectionArgs);
+        Log.v("Pop Table, rows updated", ""+ numRowsUpdated);
     }
 
 

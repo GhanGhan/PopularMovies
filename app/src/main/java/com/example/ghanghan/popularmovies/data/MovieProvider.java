@@ -199,7 +199,7 @@ public class MovieProvider extends ContentProvider {
                 retRowsDelete = db.delete(HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case FAVORITE:
-                retRowsDelete = db.delete(HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
+                retRowsDelete = db.delete(FavoritedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri " + uri);
@@ -218,17 +218,18 @@ public class MovieProvider extends ContentProvider {
         int retUpRows = 0;
         int match = sUriMatcher.match(uri);
 
+
         switch(match){
             case POPULAR:
                 retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
             case HIGHEST_RATED:
-                retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
+                retUpRows = db.update(HighestRatedEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
             case FAVORITE:
-                retUpRows = db.update(PopularEntry.TABLE_NAME, contentValues, selection,
+                retUpRows = db.update(FavoritedEntry.TABLE_NAME, contentValues, selection,
                         selectionArgs);
                 break;
             default:
