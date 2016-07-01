@@ -28,5 +28,12 @@
     </string-array>
     <string name="title_activity_details">DetailsActivity</string>
 
+    <!-- String message of favorite button -->
+    <string name="not_in_fav">Add to favorites</string>
+    <string name="in_fav">Added to favorites</string>
+    <string name="remove_fav">Remove from favorites</string>
+    <string name="fav_removed">Removed from favorites</string>
+
+
 
 </resources>

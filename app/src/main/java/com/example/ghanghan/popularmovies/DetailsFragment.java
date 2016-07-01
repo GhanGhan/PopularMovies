@@ -144,14 +144,14 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 int fav = cursor.getInt(0);
                 if(fav == -1) {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                    mFavButton.setText("Add to favorites");
+                    mFavButton.setText(getString(R.string.not_in_fav));
                 }
                 else {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
-                    mFavButton.setText("Added to favorites");
+                    mFavButton.setText(getString(R.string.in_fav));
                 }
             }
-        }
+        }//end if
         else if (mTable.equals("vote_average.desc")){
 
             Cursor cursor = getActivity().getContentResolver().query(MovieContract.HighestRatedEntry.CONTENT_URI,
@@ -162,14 +162,18 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 int fav = cursor.getInt(0);
                 if(fav == -1) {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                    mFavButton.setText("Add to favorites");
+                    mFavButton.setText(getString(R.string.not_in_fav));
                 }
 
                 else {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
-                    mFavButton.setText("Added to favorites");
+                    mFavButton.setText(getString(R.string.in_fav));
                 }
             }
+        }//end if
+        else if(mTable.equals("favorites")){
+            mFavButton.setBackgroundColor(getResources().getColor(R.color.not_removed));
+            mFavButton.setText(getString(R.string.remove_fav));
         }
 
     }
@@ -195,7 +199,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = addToFavoritesTable(cursor);
                     updatePopularTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
-                    mFavButton.setText("Added to favorites");
+                    mFavButton.setText(getString(R.string.in_fav));
                 }
                 else{
                     int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
@@ -203,7 +207,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = -1;
                     updatePopularTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                    mFavButton.setText("Add to favorites");
+                    mFavButton.setText(getString(R.string.not_in_fav));
                     Log.v("Fav rows deleted", Integer.toString(rowsD));
                 }
             }
@@ -219,7 +223,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = addToFavoritesTable(cursor);
                     updateHighTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
-                    mFavButton.setText("Add to favorites");
+                    mFavButton.setText(getString(R.string.in_fav));
                 }
                 else{
                     int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
@@ -227,7 +231,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = -1;
                     updateHighTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                    mFavButton.setText("Added to favorites");
+                    mFavButton.setText(R.string.not_in_fav);
                     Log.v("Fav rows deleted", Integer.toString(rowsD));
                 }
             }

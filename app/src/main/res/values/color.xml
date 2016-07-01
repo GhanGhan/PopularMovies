@@ -2,4 +2,6 @@
 <resources>
     <color name="button_unselected">#D50000</color>
     <color name="selected">#2E7D32</color>
+    <color name="not_removed">#FFEB3B</color>
+    <color name="removed">#9C27B0</color>
 </resources>
