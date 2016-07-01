@@ -212,7 +212,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 }
             }
             cursor.close();
-        }
+        }// end if
         else if(mTable.equals("vote_average.desc")){
             cursor = getActivity().getContentResolver().query(MovieContract.HighestRatedEntry.CONTENT_URI,
                     HIGH_RATE_COLUMNS, MovieContract.HighestRatedEntry.COLUMN_MOVIE_ID + " = ?",
@@ -235,6 +235,16 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     Log.v("Fav rows deleted", Integer.toString(rowsD));
                 }
             }
+        }//end else if
+        else if(mTable.equals("favorites")){
+            //check if it exists in popular table or high table
+            updatePopularTable(-1, selectionArgs);
+            updateHighTable(-1, selectionArgs);
+            getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
+                    MovieContract.FavoritedEntry.COLUMN_MOVIE_ID + " = ? ", selectionArgs);
+            mFavButton.setClickable(false);
+            mFavButton.setBackgroundColor(getResources().getColor(R.color.removed));
+            mFavButton.setText(getString(R.string.fav_removed));
         }
 
     }
