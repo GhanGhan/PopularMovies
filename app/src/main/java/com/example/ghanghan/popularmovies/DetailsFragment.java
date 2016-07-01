@@ -142,10 +142,14 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
             if(cursor.moveToFirst()){
                 Log.v("Details onCreateView", "is favourtite?");
                 int fav = cursor.getInt(0);
-                if(fav == -1)
+                if(fav == -1) {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                else
+                    mFavButton.setText("Add to favorites");
+                }
+                else {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setText("Added to favorites");
+                }
             }
         }
         else if (mTable.equals("vote_average.desc")){
@@ -156,10 +160,15 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
             if(cursor.moveToFirst()){
                 Log.v("Details onCreateView", "is favourtite?");
                 int fav = cursor.getInt(0);
-                if(fav == -1)
+                if(fav == -1) {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
-                else
+                    mFavButton.setText("Add to favorites");
+                }
+
+                else {
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setText("Added to favorites");
+                }
             }
         }
 
@@ -186,6 +195,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = addToFavoritesTable(cursor);
                     updatePopularTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setText("Added to favorites");
                 }
                 else{
                     int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
@@ -193,6 +203,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = -1;
                     updatePopularTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    mFavButton.setText("Add to favorites");
                     Log.v("Fav rows deleted", Integer.toString(rowsD));
                 }
             }
@@ -208,6 +219,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = addToFavoritesTable(cursor);
                     updateHighTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.selected));
+                    mFavButton.setText("Add to favorites");
                 }
                 else{
                     int rowsD = getActivity().getContentResolver().delete(MovieContract.FavoritedEntry.CONTENT_URI,
@@ -215,6 +227,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                     favId = -1;
                     updateHighTable(favId, selectionArgs);
                     mFavButton.setBackgroundColor(getResources().getColor(R.color.button_unselected));
+                    mFavButton.setText("Added to favorites");
                     Log.v("Fav rows deleted", Integer.toString(rowsD));
                 }
             }
