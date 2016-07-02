@@ -179,11 +179,6 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
 
         FetchMovieInfo movieInfo = new FetchMovieInfo(mContext);
         movieInfo.execute(thumbnails.getMovieIdArray());
-        //DO NOT DELETE THIS FOR LOOP
-        //****Forces app to keep strong reference to poster paths
-        //for(int i = 0; i < mTarget.length; i++)
-        //    Log.v(LOG_TAG, "Target - " + mTarget[i].toString());
-
     }
 
     private void placePosterInFolder(String[] posterKey){
@@ -198,10 +193,7 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
             Log.v("FDir", mDirectory.getAbsolutePath());
             Log.v("FDir poster", thumbnails.getPosterPath(i).getAbsolutePath());
             Log.v("FDir server", (String)thumbnails.getItem(i));
-
         }
-
-
     }
 
 }

@@ -62,8 +62,6 @@ public class MoviesFragment extends Fragment{
 
             }
         });
-
-
         return rootView;
     }
 
@@ -97,33 +95,15 @@ public class MoviesFragment extends Fragment{
             Cursor testCursor = getActivity().getContentResolver()
                     .query(MovieContract.PopularEntry.buildPopularUri(10),
                             testArrayPopular, null, null, null);
-            if(testCursor.moveToFirst()){//if database (popular) has been updated
-                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
-                        getActivity().getApplicationContext(), order);
-                loadMoviePoster.loadImages();
-                Log.v(LOG_TAG, "load from db");
-            }
-            else {
-                updateMovieData();//getmovie data from server
-                Log.v(LOG_TAG, "load from server");
-            }
+            loadPosterFromDb(testCursor, order);
             testCursor.close();
         }
         else if(order.equals("vote_average.desc")){
-            String[] testArrayHightRate = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
+            String[] testArrayHighRate = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
             Cursor testCursor = getActivity().getContentResolver()
                     .query(MovieContract.HighestRatedEntry.buildHighestRatedUri(10),
-                            testArrayHightRate, null, null, null);
-            if(testCursor.moveToFirst()){//if database (high rate) has been updated
-                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
-                        getActivity().getApplicationContext(), order);
-                loadMoviePoster.loadImages();
-                Log.v(LOG_TAG, "load from db");
-            }
-            else {
-                updateMovieData();//getmovie data from server
-                Log.v(LOG_TAG, "load from server");
-            }
+                            testArrayHighRate, null, null, null);
+            loadPosterFromDb(testCursor, order);
             testCursor.close();
         }
         else if(order.equals("favorites")){
@@ -131,12 +111,20 @@ public class MoviesFragment extends Fragment{
             Cursor testCursor = getActivity().getContentResolver()
                     .query(MovieContract.FavoritedEntry.CONTENT_URI,
                             testArrayFavorite, null, null, null);
-            if(testCursor.moveToFirst()){
-                LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
-                        getActivity().getApplicationContext(), order);
-                loadMoviePoster.loadImages();
-                Log.v(LOG_TAG, "load from fav Table");
-            }
+            loadPosterFromDb(testCursor, order);
+        }
+    }// end updateData
+
+    private void loadPosterFromDb(Cursor cursor, String order){
+        if(cursor.moveToFirst()){//if database (high rate) has been updated
+            LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
+                    getActivity().getApplicationContext(), order);
+            loadMoviePoster.loadImages();
+            Log.v(LOG_TAG, "load from db");
+        }
+        else if(order.equals("popularity.desc") || order.equals("vote_average.desc")) {
+            updateMovieData();//getmovie data from server
+            Log.v(LOG_TAG, "load from server");
         }
     }
 

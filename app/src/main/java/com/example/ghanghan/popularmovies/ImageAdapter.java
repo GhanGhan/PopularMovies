@@ -98,17 +98,16 @@ public class ImageAdapter extends BaseAdapter {
         } else
             imageView = (ImageView) convertView;
 
-        if(mPosterPaths != null) {
+        if(mPosterPaths != null && !mPosterKey[position].equals("null")) {
             String url = (String)getItem(position);
 
             Log.v("Adap Positon",""+ position );
             while(getPosterPath(position).length() == 0){//loop until image is in file location
                 Log.v("ImageAdapter", "file is empty");
             }
-
-
             //Picasso.with(mContext).load(url).into(imageView); //from server
-            Picasso.with(mContext).load(getPosterPath(position)).into(imageView);
+            if(mPosterKey.equals("null")) Picasso.with(mContext).load(R.drawable.invalid_poster).into(imageView);
+            else Picasso.with(mContext).load(getPosterPath(position)).into(imageView);
         }
 
         return imageView;
