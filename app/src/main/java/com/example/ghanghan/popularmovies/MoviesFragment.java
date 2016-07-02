@@ -66,18 +66,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         mTable = prefs.getString(getActivity().getString(R.string.pref_sort_key),
                 getActivity().getString(R.string.pref_sort_default));
 
-        /*gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //final String MOVIE_BASE_URL ="http://api.themoviedb.org/3/movie/";
-                String iD = thumbnails.getMovieID(position);
-
-                if (iD != null) {
-                    ((Callback) getActivity()).onItemSelected(iD);
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor cursor = (Cursor)adapterView.getItemAtPosition(position);
+                if (cursor != null) {
+                    ((Callback) getActivity())
+                            .onItemSelected(cursor.getString(COL_MOVIE_ID));
                 }
-
             }
-        });*/
+        });
         return rootView;
     }
 
