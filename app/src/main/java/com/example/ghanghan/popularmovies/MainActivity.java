@@ -3,9 +3,12 @@ package com.example.ghanghan.popularmovies;
 //import android.support.v7.app.AppCompatActivity;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +19,7 @@ public class MainActivity extends ActionBarActivity implements  MoviesFragment.C
 
     private static final String DETAILFRAGMENT_TAG = "DFtag";
     private boolean mTwoPane;
+    private String mTable;
 
 
 
@@ -23,10 +27,13 @@ public class MainActivity extends ActionBarActivity implements  MoviesFragment.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //get table
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mTable = prefs.getString(this.getString(R.string.pref_sort_key),
+                this.getString(R.string.pref_sort_default));
         if(findViewById(R.id.movie_detail_container) != null){
             //app running on a tablet
             mTwoPane = true;
-
             if(savedInstanceState == null){
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.movie_detail_container, new DetailsFragment(), DETAILFRAGMENT_TAG).
@@ -90,5 +97,30 @@ public class MainActivity extends ActionBarActivity implements  MoviesFragment.C
         DetailsFragment.expandContent(v);// will expand the view containing the reviews
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("MainActivity", "Performing onResume");
+        //get table
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String table = prefs.getString(this.getString(R.string.pref_sort_key),
+                this.getString(R.string.pref_sort_default));
+        Log.v("Table", table);
+        // update the location in our second pane using the fragment manager
+        if (table != null && !table.equals(mTable)) {
+            Log.v("MainActivity", "new mf instance");
+            MoviesFragment mf = (MoviesFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_posters);
+            if (null != mf ) {
+                Log.v("MainActivity", "restart Loader");
+                mf.onTableChange(table);
+            }
+            //TODO: implement on Table change for Details Fragment
+            /*DetailsFragment df = (DetailsFragment)getSupportFragmentManager().
+                    findFragmentByTag(DETAILFRAGMENT_TAG);
+            if(null != df){
+                df.onLocationChanged(location);
+            }*/
+            mTable = table;
+        }
+    }
 }

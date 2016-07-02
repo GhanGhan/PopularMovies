@@ -120,6 +120,11 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         //updateData();
     }
 
+    public void onTableChange(String table){
+        mTable = table;
+        getLoaderManager().restartLoader(POSTER_LOADER, null, this);
+    }
+
     public void updateMovieData(){
         FetchThumbnail thumb = new FetchThumbnail(thumbnails, getActivity().getApplicationContext());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
