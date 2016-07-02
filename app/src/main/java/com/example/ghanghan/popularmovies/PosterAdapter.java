@@ -48,16 +48,11 @@ private String mTable;
         String posterName;
         File directory;
         File posterPath;
-        if(mTable.equals("popularity.desc") || mTable.equals("vote_average.desc")){
-            folderName = cursor.getString(DetailsFragment.COL_MOVIE_ID);
-            posterName = cursor.getString(DetailsFragment.COL_POSTER_PATH);
-            directory = wrapper.getDir(folderName, Context.MODE_PRIVATE);
-        }
-        else{
-            folderName = cursor.getString((DetailsFragment.COL_MOVIE_ID -1));
-            posterName = cursor.getString(DetailsFragment.COL_POSTER_PATH - 1);
-            directory = wrapper.getDir(folderName, Context.MODE_PRIVATE);
-        }
+
+        folderName = cursor.getString(MoviesFragment.COL_MOVIE_ID);
+        posterName = cursor.getString(MoviesFragment.COL_POSTER_PATH);
+        directory = wrapper.getDir(folderName, Context.MODE_PRIVATE);
+
         posterPath = new File(directory, posterName);
 
         ImageView posterView = viewHolder.posterView;
