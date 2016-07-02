@@ -1,12 +1,9 @@
 package com.example.ghanghan.popularmovies;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -14,34 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.Intent;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.ghanghan.popularmovies.data.MovieContract;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.StringTokenizer;
+import com.example.ghanghan.popularmovies.fetch.FetchInfo;
 
 
 /**
@@ -87,17 +62,17 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
             MovieContract.HighestRatedEntry.COLUMN_REVIEW_CONTENT
     };
 
-    private static final int COL_FAVORITE_KEY = 0;
-    private static final int COL_MOVIE_ID = 1;
-    private static final int COL_POSTER_PATH = 2;
-    private static final int COL_ORIGINAL_TITLE = 3;
-    private static final int COL_STATUS = 4;
-    private static final int COL_VOTE_AVERAGE = 5;
-    private static final int COL_TRAILER_KEYS = 6;
-    private static final int COL_OVERVIEW = 7;
-    private static final int COL_NUMBER_OF_REVIEWS = 8;
-    private static final int COL_AUTHORS = 9;
-    private static final int COL_REVIEW_CONTENT = 10;
+    public static final int COL_FAVORITE_KEY = 0;
+    public static final int COL_MOVIE_ID = 1;
+    public static final int COL_POSTER_PATH = 2;
+    public static final int COL_ORIGINAL_TITLE = 3;
+    public static final int COL_STATUS = 4;
+    public static final int COL_VOTE_AVERAGE = 5;
+    public static final int COL_TRAILER_KEYS = 6;
+    public static final int COL_OVERVIEW = 7;
+    public static final int COL_NUMBER_OF_REVIEWS = 8;
+    public static final int COL_AUTHORS = 9;
+    public static final int COL_REVIEW_CONTENT = 10;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -126,7 +101,7 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
                 getActivity().getString(R.string.pref_sort_default));
         //Set color of the button
         mFavButton = (Button)rootView.findViewById(R.id.favourite_button);
-        changeButtonColor();
+        if(mMovieId != null)changeButtonColor();
         mFavButton.setOnClickListener(this);
         return rootView;
     }
@@ -321,8 +296,10 @@ public class DetailsFragment extends Fragment implements View.OnClickListener {
         super.onStart();
         //TODO: use id from bundle instead of intent
         //String url = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails, mMovieId);
-        MovieData.loadView();
+        if(mMovieId != null) {
+            FetchInfo MovieData = new FetchInfo(getActivity(), thumbnails, mMovieId);
+            MovieData.loadView();
+        }
     }
 
     public static void expandContent(View view){

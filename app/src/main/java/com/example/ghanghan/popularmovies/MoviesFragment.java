@@ -1,11 +1,7 @@
 package com.example.ghanghan.popularmovies;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -14,12 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
-import com.example.ghanghan.popularmovies.ImageAdapter;
+
 import com.example.ghanghan.popularmovies.data.MovieContract;
+import com.example.ghanghan.popularmovies.fetch.FetchThumbnail;
 
 
 public class MoviesFragment extends Fragment{
