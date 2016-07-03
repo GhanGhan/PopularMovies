@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.ghanghan.popularmovies.BuildConfig;
-import com.example.ghanghan.popularmovies.ImageAdapter;
 import com.example.ghanghan.popularmovies.ToFile;
 
 import org.json.JSONArray;
