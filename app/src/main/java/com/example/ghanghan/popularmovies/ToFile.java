@@ -28,7 +28,8 @@ public class ToFile implements Runnable{
         FileOutputStream outputStream = null;
         Bitmap image = null;
         try {
-            image = Picasso.with(mContext).load(link).get();
+            image = Picasso.with(mContext).load(link).error(R.drawable.invalid_poster).get();
+            Log.v("Image string", "" + image.toString());
             //place bitmaps in myPath_ location
             Log.v("To File Thread", "place image in folder");
 

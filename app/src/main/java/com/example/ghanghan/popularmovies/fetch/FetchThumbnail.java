@@ -27,13 +27,11 @@ import java.net.URL;
  */
 public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
     private final String LOG_TAG = FetchThumbnail.class.getSimpleName();
-    private ImageAdapter thumbnails;
     private Context mContext;
     private ContextWrapper mWrapper;
     public File mDirectory;
 
-    public FetchThumbnail(ImageAdapter imageAdapter, Context context){
-        thumbnails = imageAdapter;
+    public FetchThumbnail( Context context){
         mContext = context;
     }
 
@@ -168,29 +166,29 @@ public class FetchThumbnail extends AsyncTask<String, Void, String[][]> {
         }
         //store poster url array inside Image adapter
         //Log.v(LOG_TAG, "Now in adapter");
-        thumbnails.setThumbIds(posterUrl);
+        /*thumbnails.setThumbIds(posterUrl);
         thumbnails.setMovieID(movieID);
         thumbnails.setPosterKeys(posterKey);
-        thumbnails.setPosterPaths(posterFilePath);
-        placePosterInFolder(posterKey);
-        thumbnails.notifyDataSetChanged();
+        thumbnails.setPosterPaths(posterFilePath);*/
+        placePosterInFolder(posterKey, posterFilePath, posterUrl);
+        //thumbnails.notifyDataSetChanged();
 
         FetchMovieInfo movieInfo = new FetchMovieInfo(mContext);
-        movieInfo.execute(thumbnails.getMovieIdArray());
+        movieInfo.execute(movieID);
     }
 
-    private void placePosterInFolder(String[] posterKey){
+    private void placePosterInFolder(String[] posterKey, File[] filePath, String[] url){
         mWrapper = new ContextWrapper(mContext.getApplicationContext());
 
         for(int i = 0; i < posterKey.length; i++){
             Log.v(LOG_TAG, "place image in folder");
             //Picasso.with(mContext).load((String) thumbnails.getItem(i)).into(mTarget[i]);//place picture in folder
-            ToFile downloadImage1 = new ToFile(thumbnails.getPosterPath(i), (String)thumbnails.getItem(i), mContext);
+            ToFile downloadImage1 = new ToFile(filePath[i], url[i], mContext);
             (new Thread(downloadImage1)).start();
 
             Log.v("FDir", mDirectory.getAbsolutePath());
-            Log.v("FDir poster", thumbnails.getPosterPath(i).getAbsolutePath());
-            Log.v("FDir server", (String)thumbnails.getItem(i));
+            Log.v("FDir poster", filePath[i].getAbsolutePath());
+            Log.v("FDir server", url[i]);
         }
     }
 

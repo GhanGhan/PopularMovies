@@ -22,7 +22,6 @@ import com.example.ghanghan.popularmovies.fetch.FetchThumbnail;
 
 public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String LOG_TAG = Fragment.class.getName();
-    private ImageAdapter thumbnails;
     private PosterAdapter posters;
     private static final int POSTER_LOADER = 0;
     private String mTable;
@@ -83,6 +82,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        update();
         getLoaderManager().initLoader(POSTER_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -114,65 +114,49 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         void onItemSelected(String movieId);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //updateData();
+    public void update(){
+        Cursor testCursor;
+        if(mTable.equals("popularity.desc")){
+            String[] testArrayPopular = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
+            testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.PopularEntry.buildPopularUri(10),
+                            testArrayPopular, null, null, null);
+        }
+        else if(mTable.equals("vote_average.desc")){
+            String[] testArrayHighRate = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
+            testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.HighestRatedEntry.buildHighestRatedUri(10),
+                            testArrayHighRate, null, null, null);
+        }
+        else {
+            String[] testArrayFavorite = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
+            testCursor = getActivity().getContentResolver()
+                    .query(MovieContract.FavoritedEntry.CONTENT_URI,
+                            testArrayFavorite, null, null, null);
+        }
+
+        if(testCursor.moveToFirst()){//if database (high rate) has been updated
+            //getLoaderManager().restartLoader(POSTER_LOADER, null, this);
+        }
+        else if(mTable.equals("popularity.desc") || mTable.equals("vote_average.desc")) {
+            updateMovieData();//getmovie data from server
+            Log.v(LOG_TAG, "load from server");
+        }
+        testCursor.close();
     }
 
     public void onTableChange(String table){
         mTable = table;
+        update();
         getLoaderManager().restartLoader(POSTER_LOADER, null, this);
     }
 
     public void updateMovieData(){
-        FetchThumbnail thumb = new FetchThumbnail(thumbnails, getActivity().getApplicationContext());
+        FetchThumbnail thumb = new FetchThumbnail(getActivity().getApplicationContext());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String order = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
         thumb.execute(order);
-    }
-
-    public void updateData(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String order = prefs.getString(getString(R.string.pref_sort_key),
-                getString(R.string.pref_sort_default));
-        if(order.equals("popularity.desc")){
-            String[] testArrayPopular = {MovieContract.PopularEntry.COLUMN_VOTE_AVERAGE};
-            Cursor testCursor = getActivity().getContentResolver()
-                    .query(MovieContract.PopularEntry.buildPopularUri(10),
-                            testArrayPopular, null, null, null);
-            loadPosterFromDb(testCursor, order);
-            testCursor.close();
-        }
-        else if(order.equals("vote_average.desc")){
-            String[] testArrayHighRate = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
-            Cursor testCursor = getActivity().getContentResolver()
-                    .query(MovieContract.HighestRatedEntry.buildHighestRatedUri(10),
-                            testArrayHighRate, null, null, null);
-            loadPosterFromDb(testCursor, order);
-            testCursor.close();
-        }
-        else if(order.equals("favorites")){
-            String[] testArrayFavorite = {MovieContract.HighestRatedEntry.COLUMN_VOTE_AVERAGE};
-            Cursor testCursor = getActivity().getContentResolver()
-                    .query(MovieContract.FavoritedEntry.CONTENT_URI,
-                            testArrayFavorite, null, null, null);
-            loadPosterFromDb(testCursor, order);
-        }
-    }// end updateData
-
-    private void loadPosterFromDb(Cursor cursor, String order){
-        if(cursor.moveToFirst()){//if database (high rate) has been updated
-            LoadMoviePoster loadMoviePoster = new LoadMoviePoster(thumbnails,
-                    getActivity().getApplicationContext(), order);
-            loadMoviePoster.loadImages();
-            Log.v(LOG_TAG, "load from db");
-        }
-        else if(order.equals("popularity.desc") || order.equals("vote_average.desc")) {
-            updateMovieData();//getmovie data from server
-            Log.v(LOG_TAG, "load from server");
-        }
     }
 
 }
