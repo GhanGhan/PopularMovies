@@ -55,7 +55,9 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         String dataMovie[], dataReview[], dataTrailer[], movieDataArray[];
         //Movie data will be held in 2-d array before uploaded in database
         int numberOfMovies = strings.length;
+        int nullMovies = 0;//counts the number of movies that have no data
         String[][] allMovieData = new String[numberOfMovies][];
+        String[][] allMovieDataFinal;
 
         for (int i = 0; i < numberOfMovies; i++) {
             try {
@@ -194,12 +196,23 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
             try {
 
                 dataMovie = getMovieData(discoverString);
+                //only include Movie in allMovieData if sufficient information is provided,
+                //otherwise make the cell null
                 dataReview = getReviewData(reviewString);
-                dataTrailer = getTrailerData(trailerString);
-                //Log.v("DataMovie Array", dataMovie[0] + " \n" + dataReview[0] + "\n" + dataTrailer[0]);
-                movieDataArray = concatArrays(dataMovie, dataReview);
-                movieDataArray = concatArrays(movieDataArray, dataTrailer);
-                allMovieData[i] = addElementToArray(strings[i], movieDataArray);
+                if(dataReview != null) {
+                    dataTrailer = getTrailerData(trailerString);
+                    //Log.v("DataMovie Array", dataMovie[0] + " \n" + dataReview[0] + "\n" + dataTrailer[0]);
+                    movieDataArray = concatArrays(dataMovie, dataReview);
+                    //if statement added if there is no movie data
+
+                    movieDataArray = concatArrays(movieDataArray, dataTrailer);
+                    allMovieData[i] = addElementToArray(strings[i], movieDataArray);
+                }
+                else{
+                    allMovieData[i] = null;
+                    nullMovies++;
+                }
+
 
 
 
@@ -209,8 +222,15 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
                 return null;
             }
         } // end for loop
-        return allMovieData;
-    }
+        allMovieDataFinal = new String[numberOfMovies - nullMovies][];
+        int j = 0;//allMovieData pointer
+        for(int i = 0 ; i < numberOfMovies-nullMovies; i++){
+            while(allMovieData[j]== null)j++;
+            allMovieDataFinal[i] = allMovieData[j];
+            j++;
+        }//end for loop
+        return allMovieDataFinal;
+    }//end do in background
 
     public String[] getMovieData(String movieSt) throws JSONException {
 
@@ -223,12 +243,33 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         JSONObject movieJson = new JSONObject(movieSt);
 
         String[] movieResults = new String[5];
-
-        movieResults[0] = movieJson.getString(MTB_TITLE);
-        movieResults[1] = movieJson.getString(MTB_PLOT);
-        movieResults[2] = movieJson.getString(MTB_RATING);
-        movieResults[3] = movieJson.getString(MTB_RELEASE);
-        movieResults[4] = movieJson.getString(MTB_THUMBNAIL);
+        //try catch blocks added to handle exception incase movie title, plot, rating, release or
+        //thumbnail is not given in the JsonObject
+        try {
+            movieResults[0] = movieJson.getString(MTB_TITLE);
+        }catch( JSONException e){
+            return null;
+        }
+        try {
+            movieResults[1] = movieJson.getString(MTB_PLOT);
+        }catch(JSONException e){
+            movieResults[1] = "No available plot";
+        }
+        try {
+            movieResults[2] = movieJson.getString(MTB_RATING);
+        }catch(JSONException e){
+            movieResults[2] = "0";
+        }
+        try {
+            movieResults[3] = movieJson.getString(MTB_RELEASE);
+        }catch(JSONException e){
+            movieResults[4] = "NA";
+        }
+        try {
+            movieResults[4] = movieJson.getString(MTB_THUMBNAIL);
+        }catch(JSONException e){
+            return null;
+        }
         //Log.v("Got Title", movieResults[0]);
         //Log.v("Got Plot", movieResults[1]);
         //Log.v("Got Rating", movieResults[2]);
@@ -339,8 +380,11 @@ public class FetchMovieInfo extends AsyncTask<String, Void, String[][]> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String order = prefs.getString(mContext.getString(R.string.pref_sort_key),
                 mContext.getString(R.string.pref_sort_default));
+        if(strings== null)
+            return;
         ContentValues[] values = new ContentValues[strings.length];
         if(order.equals("popularity.desc")) {
+
             for (int i = 0; i < strings.length; i++) {
                 values[i] = new ContentValues(11);
                 values[i].put(PopularEntry.COLUMN_FAVORITE_KEY, -1);
