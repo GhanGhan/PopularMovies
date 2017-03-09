@@ -39,7 +39,7 @@ private String mTable;
         }
     }
 
-    //populare view with information
+    //populate view with information
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ContextWrapper wrapper = new ContextWrapper(context);
